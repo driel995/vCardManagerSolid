@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/*"
   ],
-  "main": "index.js",
+  "source": "src/index.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +18,7 @@
     "@inrupt/solid-client": "^1.23.3",
     "@inrupt/solid-client-authn-browser": "^1.12.3",
     "@inrupt/vocab-common-rdf": "^1.0.5",
-    "parcel-bundler": "^2.0.0"
+    "parcel": "^2.0.0"
   },
   "browserslist": [
     "last 3 and_chr versions",

@@ -1,0 +1,117 @@
+/* CSS Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  width: 100%;
+  min-width: 270px;
+}
+body {
+  margin: 0;
+  font-family: Livvic, sans-serif;
+  width: 100%;
+  min-width: 270px;
+  font-size: 100%;
+}
+
+h2,
+h3,
+p {
+  margin: auto;
+  margin-bottom: 1%;
+  font-size: 100%;
+}
+
+.container-fluid {
+  min-width: 270px;
+}
+
+header {
+  border-bottom: #5795b9 solid;
+  width: 100%;
+}
+
+.panel {
+  min-width: 270px;
+  width: 60%;
+  position: relative;
+  border: 1px solid #005b81;
+  border-radius: 4px;
+  box-shadow: rgb(184, 196, 194) 0px 4px 10px -4px;
+  box-sizing: border-box;
+  margin: 5%;
+}
+
+.btn {
+  color: white;
+  background-color: #5795b9;
+}
+
+input,
+select {
+  width: 30vh;
+  margin: 1%;
+}
+
+select {
+  width: 20%;
+}
+
+.info {
+  display: inline;
+}
+
+.btn {
+  width: 20vh;
+  min-width: 40px;
+  margin: 5%;
+}
+
+.btn-group {
+  min-width: 30px;
+
+  width: 20vh;
+  margin: 5% 8% 5% 8%;
+}
+
+#login {
+  background: white;
+}
+
+#read {
+  background: #e6f4f9;
+}
+
+.labelStatus[role="alert"] {
+  color: purple;
+}
+
+.display {
+  margin: auto;
+  color: gray;
+}
+
+dl {
+  padding: 5%;
+}
+
+dd {
+  font-weight: bold;
+}
+
+#mainlogo {
+  min-width: 50px;
+  width: 10vh;
+}
+
+.logo {
+  width: 10%;
+  min-width: 30px;
+}
+
+.longurl {
+  font-size: 60%;
+}

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--Visibility and Charset-->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--Page informations-->
+    <meta name="keywords" content="Pod, Linked Data, vCard, Manager" />
+    <meta name="author" content="Andrea Vitti" />
+    <meta
+      name="description"
+      content="Manager for vCards imported from Pods of solidproject.com"
+    />
+
+    <title>vCard Manager</title>
+
+    <!--Basic and Custom Functions-->
+    <script defer src="./index.js"></script>
+
+    <!--Bootstrap Style-->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <!--Custom Style-->
+    <link rel="stylesheet" href="my-demo.css" />
+    <!--Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Livvic:ital,wght@0,700;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <!--END Font-->
+  </head>
+
+  <body>
+    <!--Header Container-->
+    <div class="container-fluid w-75 mx-auto">
+      <header>
+        <!--Logo-->
+        <div class="container-fluid text-center">
+          <img id="mainlogo" src="imgs/vcard.svg" class="img-fluid rounded" />
+        </div>
+
+        <!--Main title-->
+        <div class="container-fluid text-center w-100">
+          <section>
+            <h2>vCard Manager</h2>
+            <small class="text-muted"
+              >read vCards from Existing Pods and update your vCard's
+              Info</small
+            >
+          </section>
+        </div>
+
+        <!--Buttons Group-->
+        <div class="container-fluid text-center mx-auto">
+          <div class="btn-group" role="group" aria-label="">
+            <button
+              class="btn btn-outline-secondary"
+              type="submit"
+              id="btnLogin"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i>
+              <small>Login</small>
+            </button>
+
+            <button
+              class="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              id="btnVcard"
+              href="#exampleModalToggle"
+              role="button"
+            >
+              <i class="fa-solid fa-address-card"></i>
+              <small>vCard</small>
+            </button>
+          </div>
+        </div>
+        <!--END Buttons Group-->
+      </header>
+    </div>
+
+    <!--Panels Container-->
+    <div class="container-fluid w-75 mx-auto text-center">
+      <!--Login Panel-->
+
+      <div
+        id="login"
+        class="panel w-75 mx-auto d-flex d-column justify-content-between align-items-center"
+      >
+        <div class="container-fluid">
+          <h4>Quick Start</h4>
+          <p>
+            Click the button
+            <span><i class="fa-solid fa-right-to-bracket info"></i></span> to
+            log into
+          </p>
+
+          <small id="solid_identity_provider"></small>
+
+          <p>Update your vCard Infos</p>
+          <div
+            class="container-fluid w-75"
+            id="labelStatus"
+            class="labelStatus"
+          ></div>
+        </div>
+      </div>
+      <!--END Login Panel-->
+
+      <!--Write Panel-->
+      <div id="write" class="container-fluid panel w-75 mx-auto">
+        <h4>Update Infos</h4>
+
+        <form id="writeForm">
+          <div
+            class="container-fluid w-50 d-flex flex-column mx-auto text-start"
+          >
+            <label id="writename" for="input_name">Write your name: </label>
+            <input
+              type="text"
+              id="input_name"
+              name="name"
+              size="30"
+              maxlength="30"
+              placeholder="Your name here"
+              required
+            />
+
+            <label id="writeemail" for="input_email">Write your email: </label>
+            <input
+              type="email"
+              id="input_email"
+              placeholder="email@example.com"
+              required
+            />
+
+            <label id="writebirth" for="input_birth"
+              >Write your birthdate:
+            </label>
+            <input type="date" id="input_birth" placeholder="dd/mm/yyyy" />
+
+            <label for="input_gender">Select your gender:</label>
+            <select name="input_gender" id="input_gender">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="" selected hidden></option>
+            </select>
+
+            <label for="input_country">Select your country:</label>
+            <select name="input_country" id="input_country">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="" selected hidden></option>
+            </select>
+          </div>
+        </form>
+        <button type="submit" class="btn btn-secondary">
+          Write to Profile
+        </button>
+        <div class="container-fluid w-50 mx-auto text-center">
+          <dl class="display">
+            <dt>Writing status:&nbsp</dt>
+            <dd id="labelWriteStatus" class="labelStatus">
+              ...not written yet...
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <!--END Write Panel-->
+
+      <!--Read Panel-->
+      <div id="read" class="panel w-75 mx-auto">
+        <div class="container-fluid">
+          <form id="readForm">
+            <h4>Read Profile Data</h4>
+            <label id="readlabel" for="webID"
+              >Read back profile (anyone's!) data from their WebID:
+            </label>
+            <input
+              type="url"
+              id="webID"
+              name="webID"
+              size="50"
+              placeholder="...not logged in yet - but enter any WebID to read from its profile..."
+            />
+            <button
+              type="submit"
+              name="btnRead"
+              id="btnRead"
+              class="btn btn-secondary"
+            >
+              Read Profile
+            </button>
+          </form>
+        </div>
+        <dl class="display">
+          <dt>Data read from Pod:&nbsp</dt>
+          <dd id="labelFN">...not read yet...</dd>
+        </dl>
+      </div>
+
+      <!--END Read Panel-->
+    </div>
+    <!--END Panel Container-->
+    <!--Footer-->
+    <div class="container-fluid w-75 mx-auto text-center">
+      <footer
+        class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top text-center"
+      >
+        <div class="col-md-12 d-flex text-center">
+          <a
+            href="https://www.uniba.it/en"
+            target="_blank"
+            class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
+          >
+            <span class="mb-3 mb-md-0 text-muted">
+              <img src="imgs/uniba.svg" class="img-fluid rounded logo" /> © Bari
+              University "Aldo Moro"</span
+            ></a
+          >
+
+          <a
+            href="https://solidproject.org/"
+            target="_blank"
+            class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
+          >
+            <img src="imgs/solid.svg" class="img-fluid rounded logo" />
+            Study Purpose Application, made following Solid Project Guidelines
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/andrea-vitti-871766111/"
+            target="_blank"
+            class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
+          >
+            <img src="imgs/webd.png" class="img-fluid rounded logo" />
+            Developed by Andrea Vitti <i class="fa-brands fa-linkedin"></i>
+          </a>
+        </div>
+      </footer>
+    </div>
+    <!--END Footer-->
+
+    <!--vCARD POPUP-->
+    <div
+      class="modal fade"
+      id="exampleModalToggle"
+      aria-hidden="true"
+      aria-labelledby="exampleModalToggleLabel"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="mh-1">vCard Viewer</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="mb-1">
+            <!--RIPRENDI MODIFICHE DA QUI
+              <p>
+              Read your profile information first. The vCard infos will be
+              showed here
+            </p>-->
+            <div class="container-fluid w-75 mx-auto">
+              <div
+                class="container-fluid d-flex flex-column justify-content-between align-items-between"
+              >
+                <div class="container-fluid w-50 mx-auto text-center">
+                  <p>Ciao</p>
+                </div>
+
+                <div class="container-fluid w-50 mx-auto text-center">
+                  <p>Ciao</p>
+                </div>
+                <div class="container-fluid w-50 mx-auto text-center">
+                  <p>Ciao</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-primary"
+              data-bs-target="#exampleModalToggle2"
+              data-bs-toggle="modal"
+            >
+              Open second modal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="exampleModalToggle2"
+      aria-hidden="true"
+      aria-labelledby="exampleModalToggleLabel2"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
+              Modal 2
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Hide this modal and show the first with the button below.
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-primary"
+              data-bs-target="#exampleModalToggle"
+              data-bs-toggle="modal"
+            >
+              Back to first
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--END vCARD POPUP-->
+
+    <!--Bootstrap Script-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

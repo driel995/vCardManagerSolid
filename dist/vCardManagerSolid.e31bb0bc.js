@@ -62472,8 +62472,10 @@ async function writeProfile() {
   storage = [];
   const name = document.getElementById("input_name").value;
   const email = document.getElementById("input_email").value;
+  const birthday = document.getElementById("input_birth").value;
   const gender = document.getElementById("input_gender").value;
-  storage.push(name, email, gender);
+  const country = document.getElementById("input_country").value;
+  storage.push(name, email, birthday, gender, country);
   for (let i = 0; i < storage.length; i++) {
     if (storage[i] === "") {
       storage.splice(i, 1);
@@ -62511,7 +62513,12 @@ async function writeProfile() {
 
   //Updates Andrea Vitti
   profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.email, email);
+  //profile = setStringNoLocale(profile, VCARD.hasEmail, email);
+  //profile = setStringNoLocale(profile, VCARD.value, email);
+
+  profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.bday, birthday);
   profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.Gender, gender);
+  profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.country_name, country);
   //Updates End Andrea Vitti
 
   // Write back the profile to the dataset.
@@ -62526,6 +62533,7 @@ async function writeProfile() {
   labelWriteStatus.textContent = `Wrote [${storage}] in your vcard successfully!`;
   labelWriteStatus.setAttribute("role", "alert");
   labelWriteStatus.classList.add("longurl");
+  readProfile();
 }
 
 // 3. Read profile
@@ -62570,10 +62578,12 @@ async function readProfile() {
   //Get vCard Info
   const formattedName = (0, _solidClient.getStringNoLocale)(profile, _vocabCommonRdf.VCARD.fn);
   const formattedEmail = (0, _solidClient.getStringNoLocale)(profile, _vocabCommonRdf.VCARD.email);
+  const formattedBirth = (0, _solidClient.getStringNoLocale)(profile, _vocabCommonRdf.VCARD.bday);
   const formattedGender = (0, _solidClient.getStringNoLocale)(profile, _vocabCommonRdf.VCARD.Gender);
+  const formattedCountry = (0, _solidClient.getStringNoLocale)(profile, _vocabCommonRdf.VCARD.country_name);
   const content = document.getElementById("labelFN");
   storage = [];
-  storage.push(formattedName, formattedEmail, formattedGender);
+  storage.push(formattedName, formattedEmail, formattedBirth, formattedGender, formattedCountry);
   // Update the page with the retrieved values.
   content.textContent = "";
   for (let i = 0; i < storage.length; i++) {
@@ -62602,32 +62612,40 @@ async function readProfile() {
  </section>
   </div>
   
-   <div class="col">
+
+
+   
+  </div>
+<div class="row">
+
+  <div class="col">
  <section>
  <label for="field-email">Gender:</label>
  <p id="field-email">${formattedGender}</p>
  </section>
   </div>
 
+<div class="col">
+ <section>
+ <label for="field-birth">Birthday:</label>
+ <p id="field-birth">${formattedBirth}</p>
+ </section>
+  </div>
+
+  </div>
+<div class="row">
     <div class="col">
  <section>
- <label for="field-email">Gender:</label>
- <p id="field-email">${formattedGender}</p>
- </section>
-  </div>  <div class="col">
- <section>
- <label for="field-email">Gender:</label>
- <p id="field-email">${formattedGender}</p>
- </section>
-  </div>  <div class="col">
- <section>
- <label for="field-email">Gender:</label>
- <p id="field-email">${formattedGender}</p>
+ <label for="field-country">Country:</label>
+ <p id="field-country">${formattedCountry}</p>
  </section>
   </div>
 
+  
 
-  </div>
+</div>
+
+  
   </div>
   
  
@@ -62671,7 +62689,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56193" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49997" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

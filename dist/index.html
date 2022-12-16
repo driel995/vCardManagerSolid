@@ -35,11 +35,11 @@
       <header>
         <!--Logo-->
         <div class="container-fluid text-center">
-          <img id="mainlogo" src="/vcard.a9df5eef.svg" class="img-fluid rounded">
+          <img id="mainlogo" src="/vcard.a9df5eef.svg" class="img-fluid rounded-circle">
         </div>
 
         <!--Main title-->
-        <div class="container-fluid text-center w-100">
+        <div class="container-fluid text-center w-100 mx-auto">
           <section>
             <h2>vCard Manager</h2>
             <small class="text-muted">read vCards from Existing Pods and update your vCard's
@@ -49,13 +49,13 @@
 
         <!--Buttons Group-->
         <div class="container-fluid text-center mx-auto">
-          <div class="btn-group" role="group" aria-label="">
-            <button class="btn btn-outline-primary bg-gradient rounded-circle" type="submit" id="btnLogin">
+          <div class="btn-group mx-auto" role="group" aria-label="">
+            <button class="btn btn-primary bg-gradient btn-floating" type="submit" id="btnLogin">
               <i class="fa-solid fa-right-to-bracket"></i>
               <small>Login</small>
             </button>
 
-            <button class="btn btn-outline-primary bg-gradient rounded-circle" data-bs-toggle="modal" id="btnVcard" href="#exampleModalToggle" role="button">
+            <button class="btn btn-primary bg-gradient btn-floating" data-bs-toggle="modal" id="btnVcard" href="#exampleModalToggle" role="button">
               <i class="fa-solid fa-address-card"></i>
               <small>vCard</small>
             </button>
@@ -91,26 +91,27 @@
         <h4>Update Infos</h4>
 
         <form id="writeForm">
-          <div class="container-fluid w-100 align-items-center d-flex flex-column mx-auto text-center">
+          <div class="container-fluid w-75 align-items-center d-flex flex-column mx-auto text-center">
             <label id="writename" for="input_name">Write your name: </label>
             <input type="text" id="input_name" name="name" size="30" maxlength="30" placeholder="Your name here" required="">
 
             <label id="writeemail" for="input_email">Write your email: </label>
             <input type="email" id="input_email" placeholder="email@example.com" required="">
 
-            <label id="writebirth" for="input_birth">Write your birthdate:
+            <label id="writebirth" for="input_birth">Write your birthday:
             </label>
             <input type="date" id="input_birth" placeholder="dd/mm/yyyy">
 
             <label for="input_gender">Select your gender:</label>
             <select name="input_gender" id="input_gender" class="smallsel">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
               <option value="" selected="" hidden=""></option>
             </select>
 
             <label for="input_country">Select your country:</label>
             <select name="input_country" id="input_country">
+              <option value="" selected="" hidden=""></option>
               <option value="Afghanistan">Afghanistan</option>
               <option value="Åland Islands">Åland Islands</option>
               <option value="Albania">Albania</option>
@@ -411,10 +412,11 @@
               <option value="Zimbabwe">Zimbabwe</option>
             </select>
           </div>
+          <button type="submit" class="btn btn-secondary w-50">
+            Write to Profile
+          </button>
         </form>
-        <button type="submit" class="btn btn-secondary">
-          Write to Profile
-        </button>
+
         <div class="container-fluid w-50 mx-auto text-center">
           <dl class="display">
             <dt>Writing status:&nbsp</dt>
@@ -434,7 +436,7 @@
             <label id="readlabel" for="webID">Read back profile (anyone's!) data from their WebID:
             </label>
             <input type="url" id="webID" name="webID" size="50" placeholder="...not logged in yet - but enter any WebID to read from its profile...">
-            <button type="submit" name="btnRead" id="btnRead" class="btn btn-secondary">
+            <button type="submit" name="btnRead" id="btnRead" class="btn btn-secondary w-50">
               Read Profile
             </button>
           </form>
@@ -449,23 +451,51 @@
     </div>
     <!--END Panel Container-->
     <!--Footer-->
-    <div class="container-fluid w-75 mx-auto text-center">
-      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top text-center">
-        <div class="d-flex text-center">
-          <a href="https://www.uniba.it/en" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-            <span class="mb-3 mb-md-0 text-muted">
-              <img src="/uniba.24933b42.svg" class="img-fluid rounded logo"> © Bari
-              University "Aldo Moro"</span></a>
+    <div class="container w-75 mx-auto text-center">
+      <footer class="py-3 my-4 border-top">
+        <div class="d-flex flex-column text-center justify-content-between align-items-center">
+          <div class="container mb-3 mb-md-0 text-muted">
+            <a href="https://www.uniba.it/en" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+              <img src="/uniba.24933b42.svg" class="img-fluid rounded logo">
+              <p>© Bari University "Aldo Moro"</p>
+            </a>
+          </div>
 
-          <a href="https://solidproject.org/" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-            <img src="/solid.e6f4e6fe.svg" class="img-fluid rounded logo">
-            Study Purpose Application, made following Solid Project Guidelines
-          </a>
+          <div class="container mb-3 mb-md-0 text-muted">
+            <a href="https://solidproject.org/" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+              <img src="/solid.e6f4e6fe.svg" class="img-fluid rounded logo">
+              <p>
+                Study Purpose Application, made following Solid Project
+                Guidelines
+              </p>
+            </a>
+          </div>
 
-          <a href="https://www.linkedin.com/in/andrea-vitti-871766111/" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-            <img src="/webd.f889d70c.png" class="img-fluid rounded logo">
-            Developed by Andrea Vitti <i class="fa-brands fa-linkedin"></i>
-          </a>
+          <div class="container mb-3 mb-md-0 text-muted">
+            <div class="container">
+              <img src="/webd.f889d70c.png" class="img-fluid rounded logo">
+
+              <div class="col">
+                <div class="row">
+                  <p>Developed by:</p>
+                </div>
+                <div class="row">
+                  <p>
+                    Andrea Vitti
+                    <a href="https://www.linkedin.com/in/andrea-vitti-871766111/" target="_blank" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"><i class="fa-brands fa-linkedin"></i></a>
+                  </p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row">
+                  <p>Supervisor:</p>
+                </div>
+                <div class="row">
+                  <p>Miguel Ceriani</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
@@ -479,24 +509,18 @@
             <h1 class="modal-title fs-5" id="mh-1">vCard Viewer</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body" id="mb-1">
+          <div class="modal-body">
             <!--RIPRENDI MODIFICHE DA QUI
               <p>
               Read your profile information first. The vCard infos will be
               showed here
             </p>-->
-            <div class="container-fluid w-75 mx-auto">
-              <div class="container-fluid d-flex flex-column justify-content-between align-items-between">
-                <div class="container-fluid w-50 mx-auto text-center">
-                  <p>Ciao</p>
-                </div>
-
-                <div class="container-fluid w-50 mx-auto text-center">
-                  <p>Ciao</p>
-                </div>
-                <div class="container-fluid w-50 mx-auto text-center">
-                  <p>Ciao</p>
-                </div>
+            <div class="container-fluid w-75 mx-auto d-flex" id="mb-1">
+              <div class="container-fluid d-flex">
+                <p>
+                  Profile vCard's Information will appear here after login or
+                  reading an external profile with read button
+                </p>
               </div>
             </div>
           </div>

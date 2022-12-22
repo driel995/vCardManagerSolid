@@ -51,6 +51,10 @@ select {
   margin: 1%;
 }
 
+.webid {
+  width: 60vh;
+}
+
 .smallsel {
   width: 20%;
 }

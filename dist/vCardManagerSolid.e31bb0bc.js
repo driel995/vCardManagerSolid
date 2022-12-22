@@ -62547,9 +62547,9 @@ async function writeProfile() {
 
   // Update the page with the retrieved values.
   const labelWriteStatus = document.getElementById("labelWriteStatus");
-  labelWriteStatus.textContent = `Wrote [${storage}] in your vcard successfully!`;
+  labelWriteStatus.innerHTML = `<dt>Wrote [${storage}] in your vcard successfully!</dt>`;
   labelWriteStatus.setAttribute("role", "alert");
-  labelWriteStatus.classList.add("longurl");
+  labelWriteStatus.classList.add("str-print");
   readProfile();
 }
 

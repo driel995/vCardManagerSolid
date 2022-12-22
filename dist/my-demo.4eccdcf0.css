@@ -72,14 +72,14 @@ select {
 .btn {
   color: white;
   background-color: #5795b9;
-  width: 30vh;
+  width: 40vh;
   min-width: 40px;
   margin: 5%;
 }
 
 .btn-group {
   min-width: 40px;
-  width: 30vh;
+  width: 40vh;
   margin-bottom: 1%;
 }
 
@@ -121,6 +121,11 @@ dd {
 .longurl {
   position: relative;
   width: 80%;
+  font-size: 65%;
+}
+
+.str-print {
+  /*Printing the storage content*/
   font-size: 65%;
 }
 

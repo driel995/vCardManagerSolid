@@ -39,7 +39,7 @@
         </div>
 
         <!--Main title-->
-        <div class="container-fluid text-center w-100 mx-auto">
+        <div class="container-fluid text-center w-75 mx-auto">
           <section>
             <h2>vCard Manager</h2>
             <small class="text-muted">read vCards from Existing Pods and update your vCard's
@@ -87,7 +87,7 @@
       <!--END Login Panel-->
 
       <!--Write Panel-->
-      <div id="write" class="container-fluid panel w-75 mx-auto">
+      <div id="write" class="container-fluid panel w-75 mx-auto text-center">
         <h4>Update Infos</h4>
 
         <form id="writeForm">
@@ -106,7 +106,7 @@
             <select name="input_gender" id="input_gender" class="smallsel">
               <option value="Male">Male</option>
               <option value="Female">Female</option>
-              <option value="" selected="" hidden=""></option>
+              <option value="not specified" selected="" hidden=""></option>
             </select>
 
             <label for="input_country">Select your country:</label>
@@ -411,11 +411,16 @@
               <option value="Zambia">Zambia</option>
               <option value="Zimbabwe">Zimbabwe</option>
             </select>
-          </div>
-          <button type="submit" class="btn btn-secondary w-50">
+
+            <label id="writeimg64" for="input_img">Upload your profile pic:
+            </label>
+            <input type="file" id="input_img">
+
+           
+          <button type="submit" class="btn btn-secondary">
             Write to Profile
           </button>
-        </form>
+        </div></form>
 
         <div class="container-fluid w-50 mx-auto text-center">
           <dl class="display">
@@ -430,13 +435,14 @@
 
       <!--Read Panel-->
       <div id="read" class="panel w-75 mx-auto">
-        <div class="container mx-auto">
+        <div class="container mx-auto text-center">
           <form id="readForm">
             <h4>Read Profile Data</h4>
             <label id="readlabel" for="webID">Read back profile (anyone's!) data from their WebID:
             </label>
+
             <input class="webid" type="url" id="webID" name="webID" size="50" placeholder="...not logged in yet - but enter any WebID to read from its profile...">
-            <button type="submit" name="btnRead" id="btnRead" class="btn btn-secondary w-50">
+            <button type="submit" name="btnRead" id="btnRead" class="btn btn-secondary">
               Read Profile
             </button>
           </form>
@@ -502,27 +508,24 @@
     <!--END Footer-->
 
     <!--vCARD POPUP-->
-    <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+    <div class="modal fade mx-auto w-100" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="mh-1">vCard Viewer</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" id="mb-1">
             <!--RIPRENDI MODIFICHE DA QUI
               <p>
               Read your profile information first. The vCard infos will be
               showed here
             </p>-->
-            <div class="container-fluid w-75 mx-auto d-flex" id="mb-1">
-              <div class="container-fluid d-flex">
-                <p>
-                  Profile vCard's Information will appear here after login or
-                  reading an external profile with read button
-                </p>
-              </div>
-            </div>
+
+            <p>
+              Profile vCard's Information will appear here after login or
+              reading an external profile with read button
+            </p>
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">

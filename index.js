@@ -22,6 +22,8 @@ const session = new Session();
 
 let storage = []; //Update Andrea Vitti
 
+//! RIVEDI QUI LA FEATURES DI CARICAMENTO FOTO PROFILO
+
 const buttonLogin = document.getElementById("btnLogin");
 const writeForm = document.getElementById("writeForm");
 const readForm = document.getElementById("readForm");
@@ -71,8 +73,21 @@ async function writeProfile() {
   const birthday = document.getElementById("input_birth").value;
   const gender = document.getElementById("input_gender").value;
   const country = document.getElementById("input_country").value;
+  const file = document.querySelector("input[type=file]")["files"][0];
+  let photo;
 
   storage.push(name, email, birthday, gender, country);
+
+  if (file) {
+    // Encode the file using the FileReader API
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      photo = reader.result; //store the base64 code for the picture
+    };
+    reader.readAsDataURL(file);
+    storage.push("New Avatar");
+  }
+
   for (let i = 0; i < storage.length; i++) {
     if (storage[i] === "") {
       storage.splice(i, 1);
@@ -114,12 +129,16 @@ async function writeProfile() {
 
   //Updates Andrea Vitti
   profile = setStringNoLocale(profile, VCARD.email, email);
-  //profile = setStringNoLocale(profile, VCARD.hasEmail, email);
+  const linkmail = `mailto:${email}'`;
+  profile = setStringNoLocale(profile, VCARD.hasEmail, linkmail);
   //profile = setStringNoLocale(profile, VCARD.value, email);
 
   profile = setStringNoLocale(profile, VCARD.bday, birthday);
   profile = setStringNoLocale(profile, VCARD.Gender, gender);
   profile = setStringNoLocale(profile, VCARD.country_name, country);
+
+  profile = setStringNoLocale(profile, VCARD.photo, photo);
+
   //Updates End Andrea Vitti
 
   // Write back the profile to the dataset.
@@ -192,6 +211,7 @@ async function readProfile() {
   const formattedBirth = getStringNoLocale(profile, VCARD.bday);
   const formattedGender = getStringNoLocale(profile, VCARD.Gender);
   const formattedCountry = getStringNoLocale(profile, VCARD.country_name);
+  const formattedPhoto = getStringNoLocale(profile, VCARD.photo);
 
   const content = document.getElementById("labelFN");
   storage = [];
@@ -200,7 +220,8 @@ async function readProfile() {
     formattedEmail,
     formattedBirth,
     formattedGender,
-    formattedCountry
+    formattedCountry,
+    "Avatar"
   );
   // Update the page with the retrieved values.
   content.textContent = "";
@@ -217,57 +238,104 @@ async function readProfile() {
   document.getElementById("mh-1").innerHTML = `${formattedName}'s vCard`;
 
   document.getElementById("mb-1").innerHTML = `
-  <div class="container">
   <div class="row">
-  <div class="col">
+  <div class="col-6">
   <section>
-  <label for="field-name">Name:</label>
+  <img src="${formattedPhoto}" class="propic rounded">
+  </section>
+  </div>
+
+  <div class="col-6">
+  <section>
+  <p class="text-center">Links:
+  <ul class="links">
+  <li><a href="#" class="text-muted"><i class="fa-brands fa-linkedin"></i> Linkedin</a></li>
+  <li><a href="#" class="text-muted"><i class="fa-brands fa-facebook-messenger"></i> Facebook</a></li>
+  <li><a href="#" class="text-muted"><i class="fa-brands fa-github"></i> Github</a></li>
+  <li><a href="#" class="text-muted"><i class="fa-solid fa-layer-group"></i> POD</a></li>
+
+  </ul>
+  </p>
+  </section></div>
+  </div>
+
+  <div class="row">
+  <div class="col-6">
+  <section>
+  <label for="field-name">Fullname:</label>
   <p id="field-name">${formattedName}</p>
   </section>
   </div>
 
- <div class="col">
- <section>
+  <div class="col-6">
+  <section>
+ <label for="field-gender">Gender:</label>
+ <p id="field-gender">${formattedGender}</p>
+ </section>
+  </div>
+  </div>
+
+  <div class="row">
+
+
+
+ 
+<div class="col-6">
+<section>
  <label for="field-email">Email:</label>
- <p id="field-email">${formattedEmail}</p>
+ <p id="field-email"><a href="mailto:${formattedEmail}">${formattedEmail}</a></p>
  </section>
-  </div>
-  
 
 
-   
-  </div>
-<div class="row">
 
-  <div class="col">
- <section>
- <label for="field-email">Gender:</label>
- <p id="field-email">${formattedGender}</p>
- </section>
-  </div>
-
-<div class="col">
- <section>
- <label for="field-birth">Birthday:</label>
- <p id="field-birth">${formattedBirth}</p>
- </section>
-  </div>
 
   </div>
-<div class="row">
-    <div class="col">
- <section>
+
+   <div class="col-4">
+
+   <section>
  <label for="field-country">Country:</label>
  <p id="field-country">${formattedCountry}</p>
  </section>
+
+ 
+  </div> 
+
   </div>
+
+
+<div class="row">
+
+<div class="col-6">
+<section>
+ <label for="field-birth">Birthday:</label>
+ <p id="field-birth">${formattedBirth}</p>
+ </section>
+</div>
+
+<div class="col-6">
+  
+  </div>
+
+ 
+  
+
+
+
+  </div>
+<div class="row">
+
+
+    <div class="col-6">
+ 
+  </div>
+
 
   
 
 </div>
 
   
-  </div>
   
  
   `;

@@ -72,14 +72,14 @@ select {
 .btn {
   color: white;
   background-color: #5795b9;
-  width: 40vh;
+  width: 25vh;
   min-width: 40px;
   margin: 5%;
 }
 
 .btn-group {
   min-width: 40px;
-  width: 40vh;
+  width: 30vh;
   margin-bottom: 1%;
 }
 

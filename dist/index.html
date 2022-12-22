@@ -69,20 +69,25 @@
     <div class="container-fluid w-75 mx-auto text-center">
       <!--Login Panel-->
 
-      <div id="login" class="panel w-75 mx-auto d-flex d-column justify-content-between align-items-center">
-        <div class="container-fluid">
-          <h4>Quick Start</h4>
+      <div id="login" class="panel w-75 mx-auto text-center">
+        <h4>Quick Start</h4>
+        <div class="container-fluid text-start">
           <p>
-            Click the button
-            <span><i class="fa-solid fa-right-to-bracket info"></i></span> to
-            log into
+            <i class="fa-solid fa-right-to-bracket info"></i>
+            Click the button to log into
+            <small id="solid_identity_provider"></small>
           </p>
 
-          <small id="solid_identity_provider"></small>
-
-          <p>Update your vCard Infos</p>
-          <div class="container-fluid w-75" id="labelStatus"></div>
+          <p>
+            <i class="fa-solid fa-address-card"></i>
+            Update your vCard Infos and see Personal or Other users vCards
+          </p>
         </div>
+
+        <dl class="display">
+          <dt>Session:</dt>
+          <dd id="labelStatus" class="labelStatus">...not logged in...</dd>
+        </dl>
       </div>
       <!--END Login Panel-->
 

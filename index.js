@@ -129,8 +129,8 @@ async function writeProfile() {
 
   //Updates Andrea Vitti
   profile = setStringNoLocale(profile, VCARD.email, email);
-  const linkmail = `mailto:${email}'`;
-  profile = setStringNoLocale(profile, VCARD.hasEmail, linkmail);
+  //const linkmail = `mailto:${email}'`;
+  profile = setStringNoLocale(profile, VCARD.hasEmail, email);
   //profile = setStringNoLocale(profile, VCARD.value, email);
 
   profile = setStringNoLocale(profile, VCARD.bday, birthday);

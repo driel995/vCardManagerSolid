@@ -62527,8 +62527,8 @@ async function writeProfile() {
 
   //Updates Andrea Vitti
   profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.email, email);
-  const linkmail = `mailto:${email}'`;
-  profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.hasEmail, linkmail);
+  //const linkmail = `mailto:${email}'`;
+  profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.hasEmail, email);
   //profile = setStringNoLocale(profile, VCARD.value, email);
 
   profile = (0, _solidClient.setStringNoLocale)(profile, _vocabCommonRdf.VCARD.bday, birthday);
@@ -62754,7 +62754,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53406" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64654" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

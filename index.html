@@ -39,6 +39,9 @@
     />
     <!--Custom Style-->
     <link rel="stylesheet" href="my-demo.css" />
+    <!--Favicon-->
+    <link rel="icon" type="image/x-icon" href="/imgs/vcard.png" />
+
     <!--Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,7 +60,7 @@
         <div class="container-fluid text-center">
           <img
             id="mainlogo"
-            src="imgs/vcard.svg"
+            src="imgs/vcard.png"
             class="img-fluid rounded-circle"
           />
         </div>
@@ -82,18 +85,38 @@
               id="btnLogin"
             >
               <i class="fa-solid fa-right-to-bracket"></i>
-              <small>Login</small>
+              <small class="d-block">Login</small>
             </button>
 
             <button
               class="btn btn-primary bg-gradient btn-floating"
               data-bs-toggle="modal"
               id="btnVcard"
-              href="#exampleModalToggle"
+              href="#vcardModalToggle"
               role="button"
             >
               <i class="fa-solid fa-address-card"></i>
-              <small>vCard</small>
+              <small class="d-block">vCard</small>
+            </button>
+
+            <button
+              class="btn btn-primary bg-gradient btn-floating text-center"
+              data-bs-toggle="modal"
+              id="btnFriends"
+              href="#friendsModalToggle"
+              role="button"
+            >
+              <i class="fa-solid fa-handshake"></i>
+              <small class="d-block">Friends</small>
+            </button>
+
+            <button
+              class="btn btn-primary bg-gradient btn-floating"
+              type="submit"
+              id="btnLogout"
+            >
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <small class="d-block">Logout</small>
             </button>
           </div>
         </div>
@@ -117,6 +140,11 @@
           <p>
             <i class="fa-solid fa-address-card"></i>
             Update your vCard Infos and see Personal or Other users vCards
+          </p>
+
+          <p>
+            <i class="fa-solid fa-handshake"></i>
+            Manage your friends list by adding or removing loaded profiles
           </p>
         </div>
 
@@ -160,14 +188,18 @@
               </label>
               <input type="date" id="input_birth" placeholder="dd/mm/yyyy" />
 
-              <label for="input_gender">Select your gender:</label>
+              <label id="writegender" for="input_gender"
+                >Select your gender:</label
+              >
               <select name="input_gender" id="input_gender" class="smallsel">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="not specified" selected hidden></option>
               </select>
 
-              <label for="input_country">Select your country:</label>
+              <label id="writecountry" for="input_country"
+                >Select your country:</label
+              >
               <select name="input_country" id="input_country">
                 <option value="" selected hidden></option>
                 <option value="Afghanistan">Afghanistan</option>
@@ -480,12 +512,12 @@
                 <option value="Zimbabwe">Zimbabwe</option>
               </select>
 
-              <label id="writeimg64" for="input_img"
+              <label id="writeimg" for="input_img"
                 >Upload your profile pic:
               </label>
               <input type="file" id="input_img" />
 
-              <button type="submit" class="btn btn-secondary">
+              <button type="submit" class="btn btn-secondary btn-form">
                 Write to Profile
               </button>
             </div>
@@ -522,7 +554,7 @@
               type="submit"
               name="btnRead"
               id="btnRead"
-              class="btn btn-secondary"
+              class="btn btn-secondary btn-form"
             >
               Read Profile
             </button>
@@ -603,12 +635,12 @@
     </div>
     <!--END Footer-->
 
-    <!--vCARD POPUP-->
+    <!--vCARD Modal-->
     <div
       class="modal fade mx-auto w-100"
-      id="exampleModalToggle"
+      id="vcardModalToggle"
       aria-hidden="true"
-      aria-labelledby="exampleModalToggleLabel"
+      aria-labelledby="vcardModalToggleLabel"
       tabindex="-1"
     >
       <div class="modal-dialog modal-dialog-centered">
@@ -623,15 +655,90 @@
             ></button>
           </div>
           <div class="modal-body" id="mb-1">
-            <!--RIPRENDI MODIFICHE DA QUI
-              <p>
-              Read your profile information first. The vCard infos will be
-              showed here
-            </p>-->
-
             <p>
               Profile vCard's Information will appear here after login or
               reading an external profile with read button
+            </p>
+          </div>
+          <div class="modal-footer" id="vcardfooter">
+            <button class="btn btn-primary bg-success d-none" id="addfriend">
+              Add Friend
+            </button>
+            <button class="btn btn-primary bg-danger d-none" id="removefriend">
+              Remove Friend
+            </button>
+
+            <button
+              class="btn btn-primary d-none"
+              data-bs-target="#chatModalToggle"
+              data-bs-toggle="modal"
+            >
+              Send Message
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="exampleModalToggle2"
+      aria-hidden="true"
+      aria-labelledby="exampleModalToggleLabel2"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
+              Modal 2
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Hide this modal and show the first with the button below.
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-primary"
+              data-bs-target="#exampleModalToggle"
+              data-bs-toggle="modal"
+            >
+              Back to first
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--END vCARD Modal-->
+
+    <!--FRIENDS Modal-->
+    <div
+      class="modal fade mx-auto w-100"
+      id="friendsModalToggle"
+      aria-hidden="true"
+      aria-labelledby="vcardModalToggleLabel"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="mh-2">Your friends list</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="mb-2">
+            <p>
+              Log in your account to see your friends list or other users
+              friends list
             </p>
           </div>
           <div class="modal-footer">
@@ -681,7 +788,7 @@
         </div>
       </div>
     </div>
-    <!--END vCARD POPUP-->
+    <!--END FRIENDS Modal-->
 
     <!--Bootstrap Script-->
     <script

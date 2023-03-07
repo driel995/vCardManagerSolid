@@ -46,7 +46,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Livvic:ital,wght@0,700;1,500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <!--END Font-->
@@ -54,97 +54,157 @@
 
   <body>
     <!--Header Container-->
-    <div class="container-fluid w-75 mx-auto">
+
+    <div class="container mx-auto">
       <header>
-        <!--Logo-->
-        <div class="container-fluid text-center">
-          <img
-            id="mainlogo"
-            src="imgs/vcard.png"
-            class="img-fluid rounded-circle"
-          />
+        <div class="navbar justify-content-center border-bottom nav-top">
+          <a class="navbar-brand fw-bold" href="#">
+            <img src="/imgs/vcard.png" width="30" height="30" alt="" />
+            vCard Manager
+          </a>
         </div>
-
-        <!--Main title-->
-        <div class="container-fluid text-center w-75 mx-auto">
-          <section>
-            <h2>vCard Manager</h2>
-            <small class="text-muted"
-              >read vCards from Existing Pods and update your vCard's
-              Info</small
-            >
-          </section>
-        </div>
-
-        <!--Buttons Group-->
-        <div class="container-fluid text-center mx-auto">
-          <div class="btn-group mx-auto" role="group" aria-label="">
-            <button
-              class="btn btn-primary bg-gradient btn-floating"
-              type="submit"
-              id="btnLogin"
-            >
-              <i class="fa-solid fa-right-to-bracket"></i>
-              <small class="d-block">Login</small>
-            </button>
-
-            <button
-              class="btn btn-primary bg-gradient btn-floating"
-              data-bs-toggle="modal"
-              id="btnVcard"
-              href="#vcardModalToggle"
-              role="button"
-            >
-              <i class="fa-solid fa-address-card"></i>
-              <small class="d-block">vCard</small>
-            </button>
-
-            <button
-              class="btn btn-primary bg-gradient btn-floating text-center"
-              data-bs-toggle="modal"
-              id="btnFriends"
-              href="#friendsModalToggle"
-              role="button"
-            >
-              <i class="fa-solid fa-handshake"></i>
-              <small class="d-block">Friends</small>
-            </button>
-
-            <button
-              class="btn btn-primary bg-gradient btn-floating"
-              type="submit"
-              id="btnLogout"
-            >
-              <i class="fa-solid fa-right-from-bracket"></i>
-              <small class="d-block">Logout</small>
-            </button>
-          </div>
-        </div>
-        <!--END Buttons Group-->
       </header>
     </div>
 
-    <!--Panels Container-->
-    <div class="container-fluid w-75 mx-auto text-center">
-      <!--Login Panel-->
+    <div class="container mx-auto sticky-top">
+      <div class="navbar-dark d-flex justify-content-center nav-top">
+        <div class="dropdown">
+          <button
+            class="btn text-black dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <p id="navname" class="d-inline fw-bold">Guest</p>
+            <img
+              src="/imgs/user.png"
+              class="img-thumbnail rounded"
+              width="45"
+              height="45"
+              id="navpic"
+            />
+          </button>
 
-      <div id="login" class="panel w-75 mx-auto text-center">
-        <h4>Quick Start</h4>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+            <li>
+              <button
+                class="dropdown-item"
+                type="submit"
+                id="btnLogin2"
+                role="button"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+              >
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Login
+              </button>
+            </li>
+
+            <li>
+              <button
+                class="dropdown-item d-none"
+                type="submit"
+                id="btnToProfile"
+              >
+                <i class="fa-solid fa-id-badge"></i> Show my Profile
+              </button>
+            </li>
+
+            <li>
+              <button class="dropdown-item d-none" type="submit" id="btnLogout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Button trigger modal -->
+
+    <!-- Login Modal -->
+    <div
+      class="modal fade"
+      id="loginModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h1 class="modal-title fs-5" id="loginModalLabel">
+              Login - Provider Selection
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center">
+            <h3>Select an Identity provider:</h3>
+          </div>
+          <section class="mx-auto">
+            <select name="provider" id="provider" required>
+              <option value=""></option>
+              <option value="https://start.inrupt.com/">
+                Inrupt POD Spaces
+              </option>
+              <option value="https://inrupt.net">Inrupt.net</option>
+              <option value="https://solidcommunity.net">
+                Solid Community
+              </option>
+
+              <option value="https://solidweb.org/">Solidweb.org</option>
+              <option value="https://trinpod.us/">TrinPod</option>
+              <option value="https://get.use.id/">Digita</option>
+              <option value="https://solidweb.me/">Solidweb.me</option>
+              <option value="https://datapod.igrant.io/">Data Pod</option>
+            </select>
+          </section>
+          <div class="modal-footer mx-auto">
+            <button type="button" id="btnLogin" class="btn btn-primary">
+              Proceed
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--END Login Modal-->
+
+    <!--Panels Container-->
+    <div class="container-fluid w-100 mx-auto text-center">
+      <!--Quickstart Panel-->
+
+      <div id="quickstart" class="panel w-75 mx-auto text-center">
+        <h5 class="fw-bold">Quick Start</h5>
         <div class="container-fluid text-start">
-          <p>
-            <i class="fa-solid fa-right-to-bracket info"></i>
-            Click the button to log into
+          <p class="description">
+            <i class="fa-solid fa-right-to-bracket info"></i> Click the button
+            to log into
             <small id="solid_identity_provider"></small>
           </p>
 
-          <p>
-            <i class="fa-solid fa-address-card"></i>
-            Update your vCard Infos and see Personal or Other users vCards
+          <p class="description">
+            <i class="fa-solid fa-eye info"></i> Load other users profiles
+            through the Reading panel
           </p>
 
-          <p>
-            <i class="fa-solid fa-handshake"></i>
-            Manage your friends list by adding or removing loaded profiles
+          <p class="description">
+            <i class="fa-solid fa-address-card info"></i> Update your vCard
+            Infos and see Personal or Other users vCards
+          </p>
+
+          <p class="description">
+            <i class="fa-solid fa-handshake info"></i> Manage your friends list
+            by adding or removing loaded profiles
+          </p>
+
+          <p class="description">
+            <i id="calendar" class="fa-solid fa-calendar-days info"></i>
+            Publish new events and invite other users
           </p>
         </div>
 
@@ -153,12 +213,47 @@
           <dd id="labelStatus" class="labelStatus">...not logged in...</dd>
         </dl>
       </div>
-      <!--END Login Panel-->
+      <!--END Quickstart Panel-->
+
+      <!--Read Panel-->
+      <div id="read" class="panel w-75 mx-auto">
+        <div class="container mx-auto text-center">
+          <form id="readForm">
+            <h5 class="fw-bold">Read Profile Data</h5>
+            <label id="readlabel" for="webID"
+              >Read back profile (anyone's!) data from their WebID:
+            </label>
+
+            <input
+              class="webid"
+              type="url"
+              id="webID"
+              name="webID"
+              size="50"
+              placeholder="...not logged in yet - but enter any WebID to read from its profile..."
+            />
+            <button
+              type="submit"
+              name="btnRead"
+              id="btnRead"
+              class="btn btn-secondary btn-form"
+            >
+              Read Profile
+            </button>
+          </form>
+        </div>
+        <dl class="display">
+          <dt>Data read from Pod:&nbsp</dt>
+          <dd id="labelFN">...not read yet...</dd>
+        </dl>
+      </div>
+
+      <!--END Read Panel-->
 
       <!--Write Panel-->
-      <div id="write" class="container-fluid panel w-75 mx-auto">
+      <div id="write" class="container-fluid panel w-75 mx-auto d-none">
         <div class="container mx-auto text-center">
-          <h4>Update Infos</h4>
+          <h5 class="fw-bold">Update Infos</h5>
 
           <form id="writeForm">
             <div class="d-flex flex-column align-items-center">
@@ -188,7 +283,8 @@
               </label>
               <input type="date" id="input_birth" placeholder="dd/mm/yyyy" />
 
-              <label id="writegender" for="input_gender"
+              <!-- GENDER INPUT FIELD
+                <label id="writegender" for="input_gender"
                 >Select your gender:</label
               >
               <select name="input_gender" id="input_gender" class="smallsel">
@@ -196,7 +292,7 @@
                 <option value="Female">Female</option>
                 <option value="not specified" selected hidden></option>
               </select>
-
+            -->
               <label id="writecountry" for="input_country"
                 >Select your country:</label
               >
@@ -523,7 +619,7 @@
             </div>
           </form>
 
-          <dl class="display">
+          <dl class="display text-black bold">
             <dt>Writing status:&nbsp</dt>
             <dd id="labelWriteStatus" class="labelStatus">
               ...not written yet...
@@ -533,44 +629,60 @@
       </div>
       <!--END Write Panel-->
 
-      <!--Read Panel-->
-      <div id="read" class="panel w-75 mx-auto">
-        <div class="container mx-auto text-center">
-          <form id="readForm">
-            <h4>Read Profile Data</h4>
-            <label id="readlabel" for="webID"
-              >Read back profile (anyone's!) data from their WebID:
-            </label>
+      <!--New Event Panel -->
 
-            <input
-              class="webid"
-              type="url"
-              id="webID"
-              name="webID"
-              size="50"
-              placeholder="...not logged in yet - but enter any WebID to read from its profile..."
-            />
-            <button
-              type="submit"
-              name="btnRead"
-              id="btnRead"
-              class="btn btn-secondary btn-form"
-            >
-              Read Profile
-            </button>
+      <div id="event" class="panel w-75 mx-auto d-none">
+        <!--New event form-->
+        <div class="container mx-auto text-center">
+          <form id="eventForm">
+            <div class="d-flex flex-column align-items-center">
+              <h5 class="fw-bold">Event Creation</h5>
+              <label id="writetitle" for="input_title"> Event name: </label>
+              <input type="text" id="input_title" required />
+
+              <label for="input_place">Location:</label>
+              <input
+                type="url"
+                id="input_place"
+                placeholder="Map URL"
+                required
+              />
+
+              <label for="input_start">Start Date:</label>
+              <input type="date" id="input_start" required />
+
+              <label for="input_start">End Date:</label>
+              <input type="date" id="input_end" />
+
+              <label id="writedescription" for="input_description"
+                >Event description:</label
+              >
+              <textarea
+                rows="5"
+                cols="30"
+                placeholder=" Write a short description here..."
+                id="input_description"
+              ></textarea>
+
+              <button type="submit" class="btn btn-secondary btn-form">
+                Publish Event
+              </button>
+            </div>
           </form>
         </div>
+        <!-- END New Event Form -->
         <dl class="display">
-          <dt>Data read from Pod:&nbsp</dt>
-          <dd id="labelFN">...not read yet...</dd>
+          <dt>Publication Status:&nbsp</dt>
+          <dd id="labelPublicationStatus">...not published yet...</dd>
         </dl>
       </div>
 
-      <!--END Read Panel-->
+      <!--END Event Panel-->
     </div>
     <!--END Panel Container-->
+
     <!--Footer-->
-    <div class="container w-75 mx-auto text-center">
+    <div class="container w-100 mx-auto text-center">
       <footer class="py-3 my-4 border-top">
         <div
           class="d-flex flex-column text-center justify-content-between align-items-center"
@@ -582,7 +694,7 @@
               class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
             >
               <img src="imgs/uniba.svg" class="img-fluid rounded logo" />
-              <p>© Bari University "Aldo Moro"</p>
+              <p class="pt-3">© Bari University "Aldo Moro"</p>
             </a>
           </div>
 
@@ -593,7 +705,7 @@
               class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
             >
               <img src="imgs/solid.svg" class="img-fluid rounded logo" />
-              <p>
+              <p class="pt-3">
                 Study Purpose Application, made following Solid Project
                 Guidelines
               </p>
@@ -606,7 +718,7 @@
 
               <div class="col">
                 <div class="row">
-                  <p>Developed by:</p>
+                  <p class="pt-3">Developed by:</p>
                 </div>
                 <div class="row">
                   <p>
@@ -660,11 +772,11 @@
               reading an external profile with read button
             </p>
           </div>
-          <div class="modal-footer" id="vcardfooter">
-            <button class="btn btn-primary bg-success d-none" id="addfriend">
+          <div class="modal-footer mx-auto" id="vcardfooter">
+            <button class="btn btn-success d-none" id="addfriend">
               Add Friend
             </button>
-            <button class="btn btn-primary bg-danger d-none" id="removefriend">
+            <button class="btn btn-danger d-none" id="removefriend">
               Remove Friend
             </button>
 
@@ -679,41 +791,6 @@
         </div>
       </div>
     </div>
-    <div
-      class="modal fade"
-      id="exampleModalToggle2"
-      aria-hidden="true"
-      aria-labelledby="exampleModalToggleLabel2"
-      tabindex="-1"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
-              Modal 2
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            Hide this modal and show the first with the button below.
-          </div>
-          <div class="modal-footer">
-            <button
-              class="btn btn-primary"
-              data-bs-target="#exampleModalToggle"
-              data-bs-toggle="modal"
-            >
-              Back to first
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     <!--END vCARD Modal-->
 
     <!--FRIENDS Modal-->
@@ -721,10 +798,10 @@
       class="modal fade mx-auto w-100"
       id="friendsModalToggle"
       aria-hidden="true"
-      aria-labelledby="vcardModalToggleLabel"
+      aria-labelledby="friendsModalToggleLabel"
       tabindex="-1"
     >
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="mh-2">Your friends list</h1>
@@ -741,31 +818,25 @@
               friends list
             </p>
           </div>
-          <div class="modal-footer">
-            <button
-              class="btn btn-primary"
-              data-bs-target="#exampleModalToggle2"
-              data-bs-toggle="modal"
-            >
-              Open second modal
-            </button>
-          </div>
+          <div class="modal-footer"></div>
         </div>
       </div>
     </div>
+
+    <!--END FRIENDS Modal-->
+
+    <!--EVENTS Modal-->
     <div
-      class="modal fade"
-      id="exampleModalToggle2"
+      class="modal fade mx-auto w-100"
+      id="eventsModalToggle"
       aria-hidden="true"
-      aria-labelledby="exampleModalToggleLabel2"
+      aria-labelledby="eventsModalToggleLabel"
       tabindex="-1"
     >
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">
-              Modal 2
-            </h1>
+            <h1 class="modal-title fs-5" id="mh-3">Your events list</h1>
             <button
               type="button"
               class="btn-close"
@@ -773,22 +844,106 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">
-            Hide this modal and show the first with the button below.
+          <div class="modal-body" id="mb-3"></div>
+          <div class="modal-footer"></div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="creationModalToggle"
+      aria-hidden="true"
+      aria-labelledby="creationModalToggleLabel"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="creationModalToggleLabel">
+              Invite friends
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="close"
+            ></button>
           </div>
+          <div class="modal-body"></div>
           <div class="modal-footer">
             <button
               class="btn btn-primary"
-              data-bs-target="#exampleModalToggle"
+              data-bs-target="#eventsModalToggle"
               data-bs-toggle="modal"
             >
-              Back to first
+              Back to Event List
             </button>
           </div>
         </div>
       </div>
     </div>
-    <!--END FRIENDS Modal-->
+    <!--END Events Modal-->
+
+    <!--Loading view-->
+    <div class="loading-wall">
+      <div class="mx-auto text-center spin">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVBAR TOOLS -->
+
+    <div class="container w-100 sticky-bottom">
+      <div class="navbar nav-top mx-auto border-top nav-fill">
+        <div id="readStatus" class="container w-50">
+          <p class="text-center text-sm"></p>
+        </div>
+
+        <div class="d-flex justify-content-center mx-auto w-100">
+          <button
+            type="button"
+            class="btn btn-default btn-sm btn3d rounded-pill"
+            data-bs-toggle="modal"
+            id="btnFriends"
+            href="#friendsModalToggle"
+            role="button"
+          >
+            <span class="glyphicon glyphicon-cloud"></span>
+            <i class="fa-solid fa-handshake"></i>
+            Friends
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-default btn3d rounded-pill"
+            data-bs-toggle="modal"
+            id="btnVcard"
+            href="#vcardModalToggle"
+            role="button"
+          >
+            <span class="glyphicon glyphicon-cloud"></span>
+            <i class="fa-solid fa-address-card"></i>
+            vCard
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-default btn-sm btn3d rounded-pill"
+            data-bs-toggle="modal"
+            id="btnEvents"
+            href="#eventsModalToggle"
+            role="button"
+          >
+            <span class="glyphicon glyphicon-cloud"></span>
+            <i class="fa-regular fa-calendar-days"></i>
+            Events
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- END Navbar Tools-->
 
     <!--Bootstrap Script-->
     <script

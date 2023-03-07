@@ -1,3 +1,23 @@
+//? Other methods that could turn useful in my project
+import {
+  getFile,
+  saveFileInContainer,
+  isRawData,
+  getContentType,
+  addStringNoLocale,
+  createSolidDataset,
+  getDateAll,
+  getStringByLocaleAll,
+  removeAll,
+  setDate,
+  setDatetime,
+  addThing,
+  getPropertyAll,
+} from "@inrupt/solid-client";
+//?or vocabularies
+import { RDF, RDFS } from "@inrupt/vocab-common-rdf";
+
+//*Used methods and vocabularies
 import {
   getSolidDataset,
   getStringNoLocaleAll,
@@ -13,42 +33,28 @@ import {
   getDate,
   getUrl,
   setUrl,
-  getUrlAll,
   addUrl,
+  getUrlAll,
   removeUrl,
 } from "@inrupt/solid-client";
 
-import { Session } from "@inrupt/solid-client-authn-browser";
-
-import { VCARD, FOAF } from "@inrupt/vocab-common-rdf";
-
-//? Other functionalities  that could turn useful in my project
 import {
-  getFile,
-  saveFileInContainer,
-  isRawData,
-  getContentType,
-  addStringNoLocale,
-  createSolidDataset,
-  getDateAll,
-  getStringByLocaleAll,
-  removeAll,
-  setDate,
-  setDatetime,
-} from "@inrupt/solid-client";
-//?or vocabularies
-import { SCHEMA_INRUPT } from "@inrupt/vocab-common-rdf";
+  Session,
+  onSessionRestore,
+  onLogin,
+  getDefaultSession,
+} from "@inrupt/solid-client-authn-browser";
 
-// If your Pod is *not* on `solidcommunity.net`, change this to your identity provider.
-const SOLID_IDENTITY_PROVIDER = "https://solidcommunity.net";
-document.getElementById(
-  "solid_identity_provider"
-).innerHTML = `[<a target="_blank" href="${SOLID_IDENTITY_PROVIDER}">${SOLID_IDENTITY_PROVIDER}</a>]`;
+//!Screen qua importazione di schema.org
+import { VCARD, SCHEMA_INRUPT, FOAF } from "@inrupt/vocab-common-rdf";
+
+//*MAIN
 
 const NOT_ENTERED_WEBID =
   "...not logged in yet - but enter any WebID to read from its profile...";
 
-const session = new Session();
+let session = new Session();
+console.log(session);
 
 //Updates Andrea Vitti
 let storage = []; //Array for storing data read or wrote on the profile
@@ -56,43 +62,67 @@ let storage = []; //Array for storing data read or wrote on the profile
 let podUrl; //logged user pod url
 
 //flags for any vcard data to apply changes on - not required for the avatar
-let cname, cemail, cbirth, cgender, ccountry;
-
-//End Updates Andrea Vitti
+let cname, cemail, cbirth, ccountry; //cgender //!Da eliminare
 
 //Get inputFields elements
 const inputName = document.querySelector("#input_name");
 const inputEmail = document.querySelector("#input_email");
 const inputBirth = document.querySelector("#input_birth");
-const inputGender = document.querySelector("#input_gender");
 const inputCountry = document.querySelector("#input_country");
 const inputPhoto = document.querySelector("#input_img");
 
-//End Updates Andrea Vitti
+//const inputGender = document.querySelector("#input_gender"); //!Proprietà da eliminare, fa riferimento a una classe della vcard e non a una property
+
+//Get buttons elements
 const buttonLogin = document.getElementById("btnLogin");
+const buttonLoginAux = document.getElementById("btnLogin2");
 const buttonLogout = document.getElementById("btnLogout");
-const writeForm = document.getElementById("writeForm");
-const readForm = document.getElementById("readForm");
+const buttonToProfile = document.getElementById("btnToProfile");
 const buttonFriend = document.getElementById("addfriend");
 const buttonRemove = document.getElementById("removefriend");
+//End Updates Andrea Vitti
 
-// 1a. Start Login Process. Call session.login() function.
+const writeForm = document.getElementById("writeForm");
+const readForm = document.getElementById("readForm");
+const eventForm = document.getElementById("eventForm");
+
+//Event inputFields
+const inputTitle = document.getElementById("input_title");
+const inputLocation = document.getElementById("input_place");
+const inputStart = document.getElementById("input_start");
+const inputEnd = document.getElementById("input_end");
+const inputDescription = document.getElementById("input_description");
+
+// The example has the login redirect back to the index.html.
+// This calls the function to process login information.
+// If the function is called when not part of the login redirect, the function is a no-op.
+useLoading("show");
+handleRedirectAfterLogin();
+useLoading("hide");
+
+//*End MAIN
+
+//*FUNCTIONS
+
+//*Login
 async function login() {
   if (!session.info.isLoggedIn) {
     await session.login({
-      oidcIssuer: SOLID_IDENTITY_PROVIDER,
-      clientName: "Inrupt tutorial client app",
+      oidcIssuer: document.getElementById("provider").value,
+      clientName: "VCard Manager",
       redirectUrl: window.location.href,
     });
   }
 }
 
-// 1b. Login Redirect. Call session.handleIncomingRedirect() function.
-// When redirected after login, finish the process by retrieving session information.
+//*Login Redirect.
+/*Call session.handleIncomingRedirect() function.
+When redirected after login, finish the process by retrieving session information.*/
 async function handleRedirectAfterLogin() {
   await session.handleIncomingRedirect({
     restorePreviousSession: true /*this option allows to store already authenticated user. 
                                    Default would be window.location.href*/,
+    url: window.location.href,
   });
 
   if (session.info.isLoggedIn) {
@@ -104,40 +134,66 @@ async function handleRedirectAfterLogin() {
     document.getElementById("webID").value = session.info.webId;
 
     //Updates Andrea Vitti
-
-    //Fetch User's Pod Url
-    podUrl = await getPodUrlAll(webID, { fetch: fetch });
+    podUrl = await getPodUrlAll(webID, { fetch: fetch }); //Fetch User's Pod Url
+    //Read profile info after authentication
+    readProfile();
   }
-  //Read profile info after logging in
-  readProfile();
-  //End Updates Andrea Vitti
 }
 
-//Logout
+//*Logout
 async function exit() {
   if (session.info.isLoggedIn) {
     await session.logout();
   }
 }
 
-// The example has the login redirect back to the index.html.
-// This calls the function to process login information.
-// If the function is called when not part of the login redirect, the function is a no-op.
-handleRedirectAfterLogin();
+//!Screen qua funzione caricamento dataset
+//*Load Dataset
+async function loadDataset(webID = session.info.webId) {
+  // The WebID can contain a hash fragment (e.g. `#me`) to refer to profile data
+  // in the profile dataset. If we strip the hash, we get the URL of the full
+  // dataset.
+  let profileDocumentUrl = new URL(webID);
+  profileDocumentUrl.hash = "";
+  // To write to a profile, you must be authenticated. That is the role of the fetch
+  // parameter in the following call.
+  let profileDataset = await getSolidDataset(profileDocumentUrl.href, {
+    fetch: session.fetch,
+  });
 
-// 2. Write to profile
+  return { profileDataset, profileDocumentUrl };
+}
+
+//!Screen qua funzione ricerca elementi
+//*Element Search
+//If a property has more than one element (like hasAddress, hasEmail, knows), check if the value already exist in record
+function elementSearch(dataset, urls, value) {
+  let flag, currentThing, currentValue;
+  urls.forEach((element) => {
+    currentThing = getThing(dataset, element);
+    currentValue = getUrl(currentThing, VCARD.value);
+
+    if (value == currentValue) {
+      flag = true;
+    }
+  });
+  return flag;
+}
+//End Updates Andrea Vitti
+
+//*Write to profile
 async function writeProfile() {
   //Updates Andrea Vitti
   storage = [];
-  const name = document.getElementById("input_name").value;
-  const email = document.getElementById("input_email").value;
-  const birthday = document.getElementById("input_birth").value;
-  const gender = document.getElementById("input_gender").value;
-  const country = document.getElementById("input_country").value;
+  const name = inputName.value;
+  const email = inputEmail.value;
+  const birthday = inputBirth.value;
+  //const gender = document.getElementById("input_gender").value; //!Da eliminare
+  const country = inputCountry.value;
 
   const file = document.querySelector("#input_img")["files"][0];
 
-  storage.push(name, email, birthday, gender, country);
+  storage.push(name, email, birthday, country);
 
   if (file) {
     storage.push("New Avatar");
@@ -182,33 +238,36 @@ async function writeProfile() {
 
   // Updates Andrea Vitti
 
+  //! Screenshot per inserimento di più email con controllo duplicati
   // Email update
-  let mailThing;
-  let mailUrl = getUrl(profile, VCARD.hasEmail);
   const mailLink = "mailto:" + email;
-
-  // If there's already a saved email
-  if (mailUrl != null) {
-    // Take the dataset for the hasEmail property
-
-    let mailDataset = await getSolidDataset(mailUrl, {
-      fetch: session.fetch,
-    });
-
-    mailThing = getThing(mailDataset, mailUrl);
-    mailThing = setUrl(mailThing, VCARD.value, mailLink);
-    mailDataset = setThing(mailDataset, mailThing); //Update the dataset with the new email
-
-    await saveSolidDatasetAt(mailUrl, mailDataset, {
-      fetch: session.fetch,
-    });
+  let mailThing, mailUrl, flag;
+  let savedMails = getUrlAll(profile, VCARD.hasEmail);
+  if (!savedMails) {
   } else {
+    flag = elementSearch(myProfileDataset, savedMails, mailLink); //true if element is found
+  }
+  if (!flag) {
+    console.log("No match found, writing new email in profile");
+
+    //Create a new Thing and insert into Dataset
     mailThing = createThing();
+    mailThing = setStringNoLocale(mailThing, SCHEMA_INRUPT.name, email);
     mailThing = setUrl(mailThing, VCARD.value, mailLink);
     myProfileDataset = setThing(myProfileDataset, mailThing);
+
+    // Defines a url for the element related property , to link the Thing in the dataset
     mailUrl = mailThing.url.slice(46);
     mailUrl = profileDocumentUrl.href + "#" + mailUrl;
-    profile = setUrl(profile, VCARD.hasEmail, mailUrl);
+    profile = addUrl(profile, VCARD.hasEmail, mailUrl);
+  } else {
+    console.log("Mail already exist, not writing it");
+
+    //This block removes the element from the array storage, used for showing which element are written or read during interaction with profiles
+    let index = storage.indexOf(email);
+    if (index !== -1) {
+      storage.splice(index, 1);
+    }
   }
   //End Email update
 
@@ -216,7 +275,6 @@ async function writeProfile() {
   const birthdate = new Date(birthday)
     .toISOString()
     .split("T", 1)[0]; /*Convert the date in a string in format yyyy-mm-dd*/
-
   profile = setStringNoLocale(profile, VCARD.bday, birthdate);
 
   //? Not used since, in function setDate(), there's a bug that appends a Z char to the date string
@@ -226,39 +284,27 @@ async function writeProfile() {
   //End Birthday update
 
   //Gender update
-  profile = setStringNoLocale(profile, VCARD.Gender, gender);
+  //profile = setStringNoLocale(profile, VCARD.Gender, gender); //!Da eliminare
 
   //Address.country update
   let addressThing;
-  let addressUrl = getUrl(profile, VCARD.hasAddress);
+  let addressUrl = getUrl(profile, VCARD.hasAddress); //?For now, we work on a unique address, but many can be associated to profile
 
-  // If there's already a saved address
   if (addressUrl != null) {
-    // Take the dataset for the hasAddressproperty
-
-    let addressDataset = await getSolidDataset(addressUrl, {
-      fetch: session.fetch,
-    });
-
-    addressThing = getThing(addressDataset, addressUrl);
-    addressThing = setStringNoLocale(addressThing, VCARD.country_name, country);
-    addressDataset = setThing(addressDataset, addressThing); //Update the dataset with the new address
-
-    await saveSolidDatasetAt(addressUrl, addressDataset, {
-      fetch: session.fetch,
-    });
+    addressThing = getThing(myProfileDataset, addressUrl); //if there's already an address, you just need to import and modify the existing thing
   } else {
+    //if it doesn't, a new thing needs to be initialized and linked inside user profile
     addressThing = createThing();
-    addressThing = setStringNoLocale(addressThing, VCARD.country_name, country);
-    myProfileDataset = setThing(myProfileDataset, addressThing);
     addressUrl = addressThing.url.slice(46);
     addressUrl = profileDocumentUrl.href + "#" + addressUrl;
     profile = setUrl(profile, VCARD.hasAddress, addressUrl);
   }
+  addressThing = setStringNoLocale(addressThing, VCARD.country_name, country);
+  myProfileDataset = setThing(myProfileDataset, addressThing); //Update the dataset with the new address
   // End Address update
 
   //Avatar update
-  //Instead of "c" flags, avatar modifications can be spotted by checking if a file has been uploaded
+  //Instead of "c" flags, avatar modifications can be spotted by checking if there has been a file upload
   if (file) {
     document.querySelector("#writeimg").innerHTML =
       'Upload your profile pic: <i class="fa-solid fa-check"></i>';
@@ -302,30 +348,68 @@ async function writeProfile() {
       'Write your birthday: <i class="fa-solid fa-check"></i>';
     cbirth = false;
   }
-  if (cgender) {
+  /* if (cgender) {
     document.querySelector("#writegender").innerHTML =
       'Select your gender: <i class="fa-solid fa-check"></i>';
     cgender = false;
-  }
+  }*/ //!Da eliminare
   if (ccountry) {
     document.querySelector("#writecountry").innerHTML =
       'Select your country: <i class="fa-solid fa-check"></i>';
     ccountry = false;
   }
 
-  readProfile();
+  readProfile(); //reload profile info at updates end
   //End Updates Andrea Vitti
 }
 
-// 3. Read profile
+//*Read profile
 async function readProfile(id = null) {
-  let webID;
+  useLoading("show");
+  if (session.info.isLoggedIn) {
+    buttonLoginAux.classList.add("d-none");
+    buttonLogout.classList.remove("d-none");
+    buttonToProfile.classList.remove("d-none");
 
-  webID = document.getElementById("webID").value;
+    let { profileDataset } = await loadDataset();
+
+    let myProfile = getThing(profileDataset, session.info.webId);
+    let myAvatar = getUrl(myProfile, VCARD.hasPhoto);
+    let myFn = getStringNoLocale(myProfile, VCARD.fn);
+    let element = document.querySelector("#navpic");
+    element.setAttribute("src", myAvatar);
+    element = document.querySelector("#navname");
+    element.innerText = myFn;
+  } else {
+    buttonLoginAux.classList.remove("d-none");
+    buttonLogout.classList.add("d-none");
+    buttonToProfile.classList.add("d-none");
+  }
+
+  let webID;
+  let input = document.getElementById("webID");
+  const readStatus = document.querySelector("#readStatus");
+
+  if (id) {
+    webID = id;
+  } else {
+    webID = input.value;
+  }
+
+  input.value = webID;
+
+  if (session.info.webId != webID) {
+    readStatus.classList.remove("d-none");
+  } else {
+    //readStatus.classList.add("d-none");
+  }
+
   if (webID == session.info.webId) {
     document.querySelector("#write").classList.remove("d-none");
+    document.querySelector("#event").classList.remove("d-none");
   } else {
     document.querySelector("#write").classList.add("d-none");
+    document.querySelector("#event").classList.add("d-none");
   }
   if (webID === NOT_ENTERED_WEBID) {
     document.getElementById(
@@ -333,9 +417,7 @@ async function readProfile(id = null) {
     ).textContent = `Login first, or enter a WebID (any WebID!) to read from its profile`;
     return false;
   }
-  if (id) {
-    webID = id;
-  }
+
   try {
     new URL(webID);
   } catch (_) {
@@ -361,9 +443,11 @@ async function readProfile(id = null) {
       userDataset = await getSolidDataset(profileDocumentUrl.href);
     }
   } catch (error) {
+    useLoading("hide");
     document.getElementById(
       "labelFN"
-    ).textContent = `Entered value [${webID}] does not appear to be a WebID. Error: [${error}]`;
+    ).textContent = `Entered value does not appear to be a WebID. `;
+
     return false;
   }
 
@@ -377,8 +461,7 @@ async function readProfile(id = null) {
   //Get vCard Info
   const formattedName = getStringNoLocale(profile, VCARD.fn);
 
-  //?Implementare per ogni hasEmail presente nel profilo
-
+  //TODO: Implementare per ogni hasEmail presente nel profilo
   // Get email
   let formattedEmail = "";
   let mailLink = "";
@@ -412,7 +495,7 @@ async function readProfile(id = null) {
   }
   //End Get birthday
 
-  const formattedGender = getStringNoLocale(profile, VCARD.Gender); //Get gender
+  //const formattedGender = getStringNoLocale(profile, VCARD.Gender); //Get gender //!Da eliminare
 
   //Get address
   let formattedCountry = "";
@@ -437,7 +520,7 @@ async function readProfile(id = null) {
     formattedName,
     formattedEmail,
     formattedBirth,
-    formattedGender,
+    //formattedGender, //!da eliminare
     formattedCountry,
     "Avatar"
   );
@@ -459,112 +542,105 @@ async function readProfile(id = null) {
   inputName.value = formattedName;
   inputEmail.value = formattedEmail;
   inputBirth.value = formattedBirth;
-  inputGender.value = formattedGender;
+  //inputGender.value = formattedGender; //!Da eliminare
   inputCountry.value = formattedCountry;
 
+  readStatus.firstElementChild.innerHTML =
+    "Reading <b>" + formattedName + "</b>'s Profile";
+
+  // Load profile info in vcard view
+  loadCardInfo(
+    formattedName,
+    avatar,
+    // formattedGender, //!da eliminare
+    formattedEmail,
+    formattedCountry,
+    formattedBirth
+  );
+
+  //Get Friend List and update view
+  loadFriendList();
+
+  loadEventList();
+
+  useLoading("hide");
+}
+
+//*Load vCard info
+async function loadCardInfo(name, avatar, email, country, birth) {
   //Update the vcard modal with the retrieved values.
-  document.getElementById("mh-1").innerHTML = `${formattedName}'s vCard`;
+  document.getElementById("mh-1").innerHTML = `${name}'s vCard`;
 
   document.getElementById("mb-1").innerHTML = `
   <div class="row">
-  <div class="col-6">
+  <div class="col-sm-auto">
   <section>
   <img src="${avatar}" class="propic rounded">
   </section>
   </div>
 
-  <div class="col-6">
+  <div class="col-sm-auto">
+
+
+
+  
   <section>
-  <p class="text-center">Links:
-  <ul class="links">
-  <li><a href="#" class="text-muted"><i class="fa-brands fa-linkedin"></i> Linkedin</a></li>
-  <li><a href="#" class="text-muted"><i class="fa-brands fa-facebook-messenger"></i> Facebook</a></li>
-  <li><a href="#" class="text-muted"><i class="fa-brands fa-github"></i> Github</a></li>
-  <li><a href="#" class="text-muted"><i class="fa-solid fa-layer-group"></i> POD</a></li>
-
-  </ul>
-  </p>
-  </section></div>
-  </div>
-
+  <p id="field-name">
   <div class="row">
-  <div class="col-6">
-  <section>
-  <label for="field-name">Fullname:</label>
-  <p id="field-name">${formattedName}</p>
+  <div class="col-4">Fullname:</div>
+  <div class="col-8"><p class="value">${name}</p></div></p>
+  </div>
   </section>
-  </div>
 
-  <div class="col-6">
   <section>
- <label for="field-gender">Gender:</label>
- <p id="field-gender">${formattedGender}</p>
- </section>
-  </div>
-  </div>
-
+ <p id="field-birth">
   <div class="row">
+  <div class="col-4">Birthday:</div>
+  <div class="col-8"><p class="value"> ${birth}</p></div></p>
+  </div>
+ </p>
+ </section>
+
 
 
 
  
-<div class="col-6">
 <section>
- <label for="field-email">Email:</label>
- <p id="field-email"><a href="${mailLink}">${formattedEmail}</a></p>
+ <p id="field-email">
+ <div class="row">
+  <div class="col-4">Email:</div>
+  <div class="col-8"><p class="value"><a href="mailto:${email}">${email}</a></p></div>
+  </div>
+  </p>
  </section>
 
 
 
 
-  </div>
 
-   <div class="col-4">
 
    <section>
- <label for="field-country">Country:</label>
- <p id="field-country">${formattedCountry}</p>
+ <p id="field-country">
+ 
+ <div class="row">
+  <div class="col-4">Country:</div>
+  <div class="col-8"><p class="value">${country}</p></div>
+  </div>
+  </p>
  </section>
 
- 
-  </div> 
 
-  </div>
-
-
-<div class="row">
-
-<div class="col-6">
-<section>
- <label for="field-birth">Birthday:</label>
- <p id="field-birth">${formattedBirth}</p>
- </section>
+  
 </div>
 
-<div class="col-6">
-  
+
+
+
+
   </div>
 
  
-  
 
-
-
-  </div>
-<div class="row">
-
-
-    <div class="col-6">
- 
-  </div>
-
-
-  
-
-</div>
-
-  
-  
  
   `;
 
@@ -573,35 +649,33 @@ async function readProfile(id = null) {
     document.getElementById("vcardfooter").innerHTML =
       "<p class='text-center text-muted'>You must be authenticated to add this person to your friends list or sending a message</p>";
   }
+}
 
-  //*Get friends list
+//*Load friend list in the view
+async function loadFriendList(id = null) {
+  let myWebID;
+  const loadedID = document.getElementById("webID").value;
+  if (id) {
+    myWebID = id;
+  } else {
+    if (session.info.isLoggedIn) {
+      myWebID = session.info.webId;
+    } else {
+      myWebID = loadedID;
+    }
+  }
 
-  let myWebID = session.info.webId;
-
-  // The WebID can contain a hash fragment (e.g. `#me`) to refer to profile data
-  // in the profile dataset. If we strip the hash, we get the URL of the full
-  // dataset.
-  let myProfileDocumentUrl = new URL(myWebID);
-  myProfileDocumentUrl.hash = "";
-
-  // To write to a profile, you must be authenticated. That is the role of the fetch
-  // parameter in the following call.
-  let myProfileDataset = await getSolidDataset(myProfileDocumentUrl.href, {
-    fetch: session.fetch,
-  });
+  let { profileDataset } = await loadDataset(loadedID);
 
   // The profile data is a "Thing" in the profile dataset.
-  profile = getThing(myProfileDataset, myWebID);
-
-  let friendsUrl = getUrlAll(profile, FOAF.knows); //get url of all friends
+  const profile = getThing(profileDataset, loadedID);
+  const friendsUrl = getUrlAll(profile, FOAF.knows); //get url of all friends
   let friendsList = [];
 
   if (friendsUrl.length != 0) {
     for (let i = 0; i < friendsUrl.length; i++) {
       const personUrl = friendsUrl[i];
-      const myFriendDataset = await getSolidDataset(personUrl, {
-        fetch: session.fetch,
-      });
+      const myFriendDataset = await getSolidDataset(personUrl, {});
 
       const personProfile = getThing(myFriendDataset, personUrl);
       const personName = getStringNoLocaleAll(personProfile, VCARD.fn);
@@ -615,54 +689,69 @@ async function readProfile(id = null) {
 
       friendsList.push(friend);
     }
-
-    if (friendsUrl.includes(webID)) {
-      document.getElementById("addfriend").classList.add("d-none");
-      document.getElementById("removefriend").classList.remove("d-none");
-    } else {
-      document.getElementById("removefriend").classList.add("d-none");
-      document.getElementById("addfriend").classList.remove("d-none");
-    }
-  } else {
-    document.getElementById("removefriend").classList.add("d-none");
-    document.getElementById("addfriend").classList.remove("d-none");
   }
+
+  //If user is logged, check if the opened profile is a friend of the user or not and change the button style in vcard modal
+  if (myWebID) {
+    let { profileDataset } = await loadDataset(myWebID);
+    let myProfile = getThing(profileDataset, myWebID);
+    let myFriends = getUrlAll(myProfile, FOAF.knows);
+
+    if (myFriends.includes(loadedID)) {
+      buttonFriend.classList.add("d-none");
+      buttonRemove.innerText = "Remove Friend";
+      buttonRemove.classList.remove("d-none");
+    } else {
+      buttonRemove.classList.add("d-none");
+      buttonFriend.innerText = "Add Friend";
+      buttonFriend.classList.remove("d-none");
+    }
+  }
+
   //End get friends list
 
   //Update the friends modal with the user friend list
+  const formattedName = getStringNoLocale(profile, VCARD.fn);
   document.getElementById("mh-2").innerHTML = `${formattedName}'s Friend List`;
   if (friendsList.length != 0) {
-    document.getElementById("mb-2").innerHTML = `<ul id="friendlist"></ul>`;
+    document.getElementById(
+      "mb-2"
+    ).innerHTML = `<div id="friendlist" class="d-grid gap-3"></div>`;
+
+    const list = document.querySelector("#friendlist");
+    let j = 0;
 
     for (let i = 0; i < friendsList.length; i++) {
-      if (friendsList[i]["avatar"] != null) {
-        document.getElementById("friendlist").innerHTML += `
-  <li class="friendelem" id="${friendsList[i]["url"]}">
-  <a href="${friendsList[i]["url"]}">${friendsList[i]["name"]}  </a>
-  <img src="${friendsList[i]["avatar"]}" class="friend-pic img-fluid img-thumbnail"> 
-  <button type="button" class="btn btn-primary w-25 auxbtnread" data-user="${friendsList[i]["url"]}"> 
-  <i class="fa-solid fa-glasses" > </i> Read </button>
-  <button type="button" class="btn btn-danger w-25 auxbtnremove" data-user="${friendsList[i]["url"]}" data-fn="${friendsList[i]["name"]}"> 
-  <i class="fa-solid fa-xmark" > </i> Remove </button>
-  </li>`;
-      } else {
-        document.getElementById("friendlist").innerHTML += `
-        <li class="friendelem" id="${friendsList[i]["url"]}"><a href="${friendsList[i]["url"]}">${friendsList[i]["name"]}  </a> 
-        <button type="button" class="btn btn-primary w-25 auxbtnread" data-user="${friendsList[i]["url"]}"> <i class="fa-solid fa-glasses" > </i>
-         Read </button>
-
-  <button type="button" class="btn btn-danger w-25 auxbtnremove" data-user="${friendsList[i]["url"]}" data-fn="${friendsList[i]["name"]}" > 
-  <i class="fa-solid fa-xmark" ></i> Remove </button>
-  </li>`;
+      //Create a row every two elements
+      if (j == 0 || j % 2 == 0) {
+        list.innerHTML += `<div class="row" id="row${i}"></div>`;
       }
-    }
 
-    let list = document.querySelector("#friendlist");
+      j++;
+      list.lastChild.innerHTML += `
+<div class=col-6>
+<div id="${friendsList[i]["url"]}" class="card">
+ <button type="button" class="btn btn-danger auxbtnremove rounded" data-user="${friendsList[i]["url"]}" data-fn="${friendsList[i]["name"]}"> 
+  <i class="fa-solid fa-xmark xmark" ></i></button>
+  <img src="${friendsList[i]["avatar"]}" class="card-img-top friend-pic" alt="...">
+
+ 
+
+
+
+
+  <div class="card-header text-center"><a href="#" class="auxbtnread value" data-user="${friendsList[i]["url"]}">${friendsList[i]["name"]}</a>
+</div>
+<div class="card-body d-none friend-card text-center d-flex justify-content-around">
+
+</div>
+</div>
+</div>
+</div> `;
+    }
 
     list.addEventListener("click", (e) => {
       if (e.target.classList.contains("auxbtnremove")) {
-        buttonFriend.innerHTML = "Add Friend";
-
         if (
           confirm(
             "Are you sure you want to remove " +
@@ -671,6 +760,7 @@ async function readProfile(id = null) {
           ) == true
         ) {
           removeFriend(e.target.getAttribute("data-user"));
+          buttonFriend.innerHTML = "Add Friend";
 
           for (let i = 0; i < friendsList.length; i++) {
             if (friendsList[i]["url"] == e.target.getAttribute("data-user")) {
@@ -684,7 +774,7 @@ async function readProfile(id = null) {
           if (friendsList.length == 0) {
             document.getElementById(
               "mb-2"
-            ).innerHTML = `<p>No friends in your list. </p> `;
+            ).innerHTML = `<p>No friends in list. </p> `;
           }
           readProfile();
         }
@@ -695,13 +785,247 @@ async function readProfile(id = null) {
       }
     });
   } else {
-    document.getElementById(
-      "mb-2"
-    ).innerHTML = `<p>No friends in your list. </p> `;
+    document.getElementById("mb-2").innerHTML = `<p>No friends in list. </p> `;
+  }
+
+  if (!session.info.isLoggedIn || myWebID != loadedID) {
+    const friendCards = document.getElementsByClassName("auxbtnremove");
+    for (let element of friendCards) {
+      element.classList.add("d-none");
+    }
+  }
+  /*
+  <button type="button" class="btn btn-primary auxbtnread w-50" data-user="${friendsList[i]["url"]}"> 
+  <i class="fa-solid fa-eye" > </i> </button>*/
+}
+
+//MODAL FUNCTION
+function useLoading(type) {
+  const loadinEl = document.getElementsByClassName("loading-wall")[0];
+  if (type === "show") {
+    loadinEl.style.display = "block";
+  }
+  if (type === "hide") {
+    loadinEl.classList.add("loading-away");
+    setTimeout(() => {
+      loadinEl.style.display = "none";
+      loadinEl.classList.remove("loading-away");
+    }, 400);
   }
 }
 
-//Upload file into the targetContainer.
+//*Add a friend
+async function addFriend() {
+  let { profileDataset, profileDocumentUrl } = await loadDataset();
+
+  // The profile data is a "Thing" in the profile dataset.
+  let profile = getThing(profileDataset, profileDocumentUrl.href + "#me");
+  let webID = document.getElementById("webID").value; //webID of the read profile
+  profile = addUrl(profile, FOAF.knows, webID);
+
+  // Write back the profile to the dataset.
+  profileDataset = setThing(profileDataset, profile);
+
+  // Write back the dataset to your Pod.
+  await saveSolidDatasetAt(profileDocumentUrl.href, profileDataset, {
+    fetch: session.fetch,
+  });
+}
+
+//*Remove a friend from list
+async function removeFriend(id = null) {
+  let friendWebID;
+  if (id) {
+    friendWebID = id;
+  } else {
+    friendWebID = document.getElementById("webID").value;
+  }
+  let { profileDataset, profileDocumentUrl } = await loadDataset();
+
+  // The profile data is a "Thing" in the profile dataset.
+  let profile = getThing(profileDataset, profileDocumentUrl.href + "#me");
+
+  profile = removeUrl(profile, FOAF.knows, friendWebID);
+
+  // Write back the profile to the dataset.
+  profileDataset = setThing(profileDataset, profile);
+  // Write back the dataset to your Pod.
+  await saveSolidDatasetAt(profileDocumentUrl.href, profileDataset, {
+    fetch: session.fetch,
+  });
+}
+
+//TODO: Implementazione della funzione
+//*Load Events list
+async function loadEventList(id = session.info.webId) {
+  let myWebID;
+  const loadedID = document.getElementById("webID").value;
+  if (id) {
+    myWebID = id;
+  } else {
+    if (session.info.isLoggedIn) {
+      myWebID = session.info.webId;
+    } else {
+      myWebID = loadedID;
+    }
+  }
+
+  let { profileDataset } = await loadDataset(loadedID);
+
+  // The profile data is a "Thing" in the profile dataset.
+  const profile = getThing(profileDataset, loadedID);
+  const eventsUrl = getUrlAll(profile, "https://schema.org/events"); //get url of all friends
+  console.log(eventsUrl);
+  let eventsList = [];
+
+  if (eventsUrl.length != 0) {
+    for (let i = 0; i < eventsUrl.length; i++) {
+      const eventUrl = eventsUrl[i];
+
+      const eventThing = getThing(profileDataset, eventUrl);
+      const eventName = getStringNoLocaleAll(eventThing, SCHEMA_INRUPT.name);
+      const eventLocation = getUrl(eventThing, "https://schema.org/location");
+      const organizer = getUrl(eventThing, "https://schema.org/organizer");
+      const description = getStringNoLocale(
+        eventThing,
+        SCHEMA_INRUPT.description
+      );
+      const startDate = getStringNoLocale(eventThing, SCHEMA_INRUPT.startDate);
+      const endDate = getStringNoLocale(eventThing, SCHEMA_INRUPT.endDate);
+
+      const event = {
+        name: eventName,
+        location: eventLocation,
+        organizer: organizer,
+        description: description,
+        startDate: startDate,
+        endDate: endDate,
+      };
+
+      eventsList.push(event);
+    }
+  }
+
+  document.getElementById("mb-3").innerHTML = `
+  
+              <div class="eventlist">
+              <a
+                href="#"
+                class="list-group-item list-group-item-action active"
+                aria-current="true"
+              >
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">List group item heading</h5>
+                  <small class="text-danger">Organizer</small>
+                </div>
+                <p class="mb-1">Some placeholder content in a paragraph.</p>
+                <small>And some small print.</small>
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">List group item heading</h5>
+                  <small class="text-muted">3 days ago</small>
+                </div>
+                <p class="mb-1">Some placeholder content in a paragraph.</p>
+                <small class="text-muted">And some muted small print.</small>
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">List group item heading</h5>
+                  <small class="text-muted">3 days ago</small>
+                </div>
+                <p class="mb-1">Some placeholder content in a paragraph.</p>
+                <small class="text-muted">And some muted small print.</small>
+              </a>
+            </div>
+
+
+
+  
+  
+  
+  `;
+}
+
+//*Event Creation
+async function newEvent() {
+  let eventThing = createThing();
+
+  const title = inputTitle.value;
+  const location = inputLocation.value;
+  const startDate = inputStart.value;
+  const endDate = inputEnd.value;
+  const description = inputDescription.value;
+
+  eventThing = setStringNoLocale(eventThing, SCHEMA_INRUPT.name, title);
+  eventThing = setUrl(eventThing, "https://schema.org/location", location);
+
+  let dateString = new Date(startDate)
+    .toISOString()
+    .split("T", 1)[0]; /*Convert the date in a string in format yyyy-mm-dd*/
+
+  eventThing = setStringNoLocale(
+    eventThing,
+    SCHEMA_INRUPT.startDate,
+    dateString
+  );
+
+  if (endDate) {
+    dateString = new Date(endDate).toISOString().split("T", 1)[0];
+
+    eventThing = setStringNoLocale(
+      eventThing,
+      SCHEMA_INRUPT.endDate,
+      dateString
+    );
+  }
+
+  eventThing = setStringNoLocale(
+    eventThing,
+    SCHEMA_INRUPT.description,
+    description
+  );
+
+  console.log(eventThing);
+
+  let { profileDataset, profileDocumentUrl } = await loadDataset();
+
+  eventThing = addUrl(
+    eventThing,
+    SCHEMA_INRUPT.attendee,
+    profileDocumentUrl.href + "#me"
+  );
+
+  eventThing = setUrl(
+    eventThing,
+    "https://schema.org/organizer",
+    profileDocumentUrl.href + "#me"
+  );
+
+  //link the event to a list of events in your datas
+
+  let eventUrl = eventThing.url.slice(46);
+  eventUrl = profileDocumentUrl.href + "#" + eventUrl;
+
+  let profile = getThing(profileDataset, profileDocumentUrl.href + "#me");
+  profile = addUrl(profile, "https://schema.org/events", eventUrl);
+
+  // Write back to the dataset.
+  profileDataset = setThing(profileDataset, eventThing);
+  profileDataset = setThing(profileDataset, profile);
+
+  // Write back the dataset to your Pod.
+  await saveSolidDatasetAt(profileDocumentUrl.href, profileDataset, {
+    fetch: session.fetch,
+  });
+
+  // Update the page with the retrieved values.
+  const labelWriteStatus = document.getElementById("labelPublicationStatus");
+  labelWriteStatus.innerHTML = `<dt>Event published!</dt>`;
+  labelWriteStatus.setAttribute("role", "alert");
+}
+
+//*File upload in Container
 async function placeFileInContainer(file, targetContainerURL) {
   try {
     const savedFile = await overwriteFile(
@@ -719,98 +1043,36 @@ async function placeFileInContainer(file, targetContainerURL) {
   }
 }
 
-//*Add a new friend to your friends' list
-async function addFriend() {
-  let webID = session.info.webId;
-  // The WebID can contain a hash fragment (e.g. `#me`) to refer to profile data
-  // in the profile dataset. If we strip the hash, we get the URL of the full
-  // dataset.
-  let myProfileDocumentUrl = new URL(webID);
-  myProfileDocumentUrl.hash = "";
+//*End FUNCTIONS
 
-  // To write to a profile, you must be authenticated. That is the role of the fetch
-  // parameter in the following call.
-  let myProfileDataset = await getSolidDataset(myProfileDocumentUrl.href, {
-    fetch: session.fetch,
-  });
-
-  // The profile data is a "Thing" in the profile dataset.
-  let profile = getThing(myProfileDataset, webID);
-  webID = document.getElementById("webID").value;
-
-  if (webID === NOT_ENTERED_WEBID) {
-    document.getElementById(
-      "labelFN"
-    ).textContent = `Login first, or enter a WebID (any WebID!) to read from its profile`;
-    return false;
-  }
-  try {
-    new URL(webID);
-  } catch (_) {
-    document.getElementById(
-      "labelFN"
-    ).textContent = `Provided WebID [${webID}] is not a valid URL - please try again`;
-    return false;
-  }
-
-  let profileDocumentUrl = new URL(webID);
-  profileDocumentUrl.hash = "";
-  profile = addUrl(profile, FOAF.knows, webID);
-
-  // Write back the profile to the dataset.
-  myProfileDataset = setThing(myProfileDataset, profile);
-  // Write back the dataset to your Pod.
-  await saveSolidDatasetAt(myProfileDocumentUrl.href, myProfileDataset, {
-    fetch: session.fetch,
-  });
-}
-
-//*Remove a friend from friends' list
-async function removeFriend(id = null) {
-  let webID = session.info.webId;
-  let friendWebID;
-  if (id) {
-    friendWebID = id;
-  } else {
-    friendWebID = document.getElementById("webID").value;
-  }
-  // The WebID can contain a hash fragment (e.g. `#me`) to refer to profile data
-  // in the profile dataset. If we strip the hash, we get the URL of the full
-  // dataset.
-  let myProfileDocumentUrl = new URL(webID);
-  myProfileDocumentUrl.hash = "";
-
-  // To write to a profile, you must be authenticated. That is the role of the fetch
-  // parameter in the following call.
-  let myProfileDataset = await getSolidDataset(myProfileDocumentUrl.href, {
-    fetch: session.fetch,
-  });
-
-  // The profile data is a "Thing" in the profile dataset.
-  let profile = getThing(myProfileDataset, webID);
-
-  // friendWebID = document.getElementById("webID").value;
-
-  profile = removeUrl(profile, FOAF.knows, friendWebID);
-
-  // Write back the profile to the dataset.
-  myProfileDataset = setThing(myProfileDataset, profile);
-  // Write back the dataset to your Pod.
-  await saveSolidDatasetAt(myProfileDocumentUrl.href, myProfileDataset, {
-    fetch: session.fetch,
-  });
-}
-
+//*LISTENERS
 buttonLogin.onclick = function () {
   login();
 };
 
-//Updates Andrea Vitti
-//*Event listeners added
+writeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  writeProfile();
+});
 
+readForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  readProfile();
+});
+
+eventForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  newEvent();
+});
+
+//Updates Andrea Vitti
 buttonLogout.onclick = function () {
   exit();
   window.location.reload(true);
+};
+
+buttonToProfile.onclick = function () {
+  readProfile(session.info.webId);
 };
 
 buttonFriend.onclick = async function () {
@@ -847,21 +1109,7 @@ buttonRemove.onclick = async function () {
   readProfile();
 };
 
-//Updates End Andrea Vitti
-
-writeForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  writeProfile();
-});
-
-readForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  readProfile();
-});
-//Updates End Andrea Vitti
-
-//Updates Andrea Vitti
-
+//*Graphical feedbacks on profile info changes
 //Shows spinner symbol in a label when associated value has pending changes
 inputName.addEventListener("change", (event) => {
   document.querySelector("#writename").innerHTML =
@@ -881,11 +1129,11 @@ inputBirth.addEventListener("change", (event) => {
   cbirth = true;
 });
 
-inputGender.addEventListener("change", (event) => {
+/*inputGender.addEventListener("change", (event) => {
   document.querySelector("#writegender").innerHTML =
     'Select your gender: <i class="fa-solid fa-spinner"></i>';
   cgender = true;
-});
+});*/ //!Da eliminare
 
 inputCountry.addEventListener("change", (event) => {
   document.querySelector("#writecountry").innerHTML =
@@ -898,3 +1146,4 @@ inputPhoto.addEventListener("change", (event) => {
     'Upload your profile pic: <i class="fa-solid fa-spinner"></i>';
 });
 //Updates End Andrea Vitti
+//*End LISTENERS

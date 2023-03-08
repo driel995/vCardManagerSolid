@@ -1,4 +1,4 @@
-//? Other methods that could turn useful in my project
+/*? Other methods that could turn useful in my project
 import {
   getFile,
   saveFileInContainer,
@@ -14,8 +14,9 @@ import {
   addThing,
   getPropertyAll,
 } from "@inrupt/solid-client";
-//?or vocabularies
-import { RDF, RDFS } from "@inrupt/vocab-common-rdf";
+or vocabularies*/
+
+//import { RDF, RDFS } from "@inrupt/vocab-common-rdf";
 
 //*Used methods and vocabularies
 import {
@@ -40,9 +41,9 @@ import {
 
 import {
   Session,
-  onSessionRestore,
-  onLogin,
-  getDefaultSession,
+  //onSessionRestore,
+  //onLogin,
+  //getDefaultSession,
 } from "@inrupt/solid-client-authn-browser";
 
 //!Screen qua importazione di schema.org

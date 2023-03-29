@@ -46,7 +46,6 @@ import {
   //getDefaultSession,
 } from "@inrupt/solid-client-authn-browser";
 
-//!Screen qua importazione di schema.org
 import { VCARD, SCHEMA_INRUPT, FOAF } from "@inrupt/vocab-common-rdf";
 
 //*MAIN
@@ -55,7 +54,6 @@ const NOT_ENTERED_WEBID =
   "...not logged in yet - but enter any WebID to read from its profile...";
 
 let session = new Session();
-console.log(session);
 
 //Updates Andrea Vitti
 let storage = []; //Array for storing data read or wrote on the profile
@@ -63,7 +61,7 @@ let storage = []; //Array for storing data read or wrote on the profile
 let podUrl; //logged user pod url
 
 //flags for any vcard data to apply changes on - not required for the avatar
-let cname, cemail, cbirth, ccountry; //cgender //!Da eliminare
+let cname, cemail, cbirth, ccountry;
 
 //Get inputFields elements
 const inputName = document.querySelector("#input_name");
@@ -71,8 +69,6 @@ const inputEmail = document.querySelector("#input_email");
 const inputBirth = document.querySelector("#input_birth");
 const inputCountry = document.querySelector("#input_country");
 const inputPhoto = document.querySelector("#input_img");
-
-//const inputGender = document.querySelector("#input_gender"); //!Proprietà da eliminare, fa riferimento a una classe della vcard e non a una property
 
 //Get buttons elements
 const buttonLogin = document.getElementById("btnLogin");
@@ -100,7 +96,6 @@ const inputDescription = document.getElementById("input_description");
 useLoading("show");
 handleRedirectAfterLogin();
 useLoading("hide");
-
 //*End MAIN
 
 //*FUNCTIONS
@@ -189,7 +184,6 @@ async function writeProfile() {
   const name = inputName.value;
   const email = inputEmail.value;
   const birthday = inputBirth.value;
-  //const gender = document.getElementById("input_gender").value; //!Da eliminare
   const country = inputCountry.value;
 
   const file = document.querySelector("#input_img")["files"][0];
@@ -236,10 +230,10 @@ async function writeProfile() {
   // VCARD.fn object is a convenience object that includes the identifier string "http://www.w3.org/2006/vcard/ns#fn".
   // As an alternative, you can pass in the "http://www.w3.org/2006/vcard/ns#fn" string instead of VCARD.fn.
   profile = setStringNoLocale(profile, VCARD.fn, name);
+  profile = setStringNoLocale(profile, FOAF.name, name);
 
   // Updates Andrea Vitti
 
-  //! Screenshot per inserimento di più email con controllo duplicati
   // Email update
   const mailLink = "mailto:" + email;
   let mailThing, mailUrl, flag;
@@ -283,9 +277,6 @@ async function writeProfile() {
   profile = setDate(profile, VCARD.bday, birthdate);*/
 
   //End Birthday update
-
-  //Gender update
-  //profile = setStringNoLocale(profile, VCARD.Gender, gender); //!Da eliminare
 
   //Address.country update
   let addressThing;
@@ -349,11 +340,7 @@ async function writeProfile() {
       'Write your birthday: <i class="fa-solid fa-check"></i>';
     cbirth = false;
   }
-  /* if (cgender) {
-    document.querySelector("#writegender").innerHTML =
-      'Select your gender: <i class="fa-solid fa-check"></i>';
-    cgender = false;
-  }*/ //!Da eliminare
+
   if (ccountry) {
     document.querySelector("#writecountry").innerHTML =
       'Select your country: <i class="fa-solid fa-check"></i>';
@@ -496,8 +483,6 @@ async function readProfile(id = null) {
   }
   //End Get birthday
 
-  //const formattedGender = getStringNoLocale(profile, VCARD.Gender); //Get gender //!Da eliminare
-
   //Get address
   let formattedCountry = "";
   let addressThing;
@@ -521,7 +506,6 @@ async function readProfile(id = null) {
     formattedName,
     formattedEmail,
     formattedBirth,
-    //formattedGender, //!da eliminare
     formattedCountry,
     "Avatar"
   );
@@ -543,7 +527,6 @@ async function readProfile(id = null) {
   inputName.value = formattedName;
   inputEmail.value = formattedEmail;
   inputBirth.value = formattedBirth;
-  //inputGender.value = formattedGender; //!Da eliminare
   inputCountry.value = formattedCountry;
 
   readStatus.firstElementChild.innerHTML =
@@ -553,7 +536,6 @@ async function readProfile(id = null) {
   loadCardInfo(
     formattedName,
     avatar,
-    // formattedGender, //!da eliminare
     formattedEmail,
     formattedCountry,
     formattedBirth
@@ -597,7 +579,7 @@ async function loadCardInfo(name, avatar, email, country, birth) {
  <p id="field-birth">
   <div class="row">
   <div class="col-4">Birthday:</div>
-  <div class="col-8"><p class="value"> ${birth}</p></div></p>
+  <div class="col-8"><p class="value"> ${formatDate(birth)}</p></div></p>
   </div>
  </p>
  </section>
@@ -831,6 +813,7 @@ async function addFriend() {
   await saveSolidDatasetAt(profileDocumentUrl.href, profileDataset, {
     fetch: session.fetch,
   });
+  loadFriendList();
 }
 
 //*Remove a friend from list
@@ -854,6 +837,7 @@ async function removeFriend(id = null) {
   await saveSolidDatasetAt(profileDocumentUrl.href, profileDataset, {
     fetch: session.fetch,
   });
+  loadFriendList();
 }
 
 //TODO: Implementazione della funzione
@@ -875,7 +859,7 @@ async function loadEventList(id = session.info.webId) {
 
   // The profile data is a "Thing" in the profile dataset.
   const profile = getThing(profileDataset, loadedID);
-  const eventsUrl = getUrlAll(profile, "https://schema.org/events"); //get url of all friends
+  const eventsUrl = getUrlAll(profile, "https://schema.org/events"); //get url of all events to which you are related
   console.log(eventsUrl);
   let eventsList = [];
 
@@ -891,7 +875,9 @@ async function loadEventList(id = session.info.webId) {
         eventThing,
         SCHEMA_INRUPT.description
       );
-      const startDate = getStringNoLocale(eventThing, SCHEMA_INRUPT.startDate);
+      const startDate = formatDate(
+        getStringNoLocale(eventThing, SCHEMA_INRUPT.startDate)
+      );
       const endDate = getStringNoLocale(eventThing, SCHEMA_INRUPT.endDate);
 
       const event = {
@@ -906,46 +892,43 @@ async function loadEventList(id = session.info.webId) {
       eventsList.push(event);
     }
   }
+  console.log(eventsList);
 
-  document.getElementById("mb-3").innerHTML = `
-  
-              <div class="eventlist">
-              <a
+  document.getElementById(
+    "mb-3"
+  ).innerHTML = `<div class="eventlist" id="eventlist"></div>`;
+
+  let role; //Graphic element that shows your relationship with the event
+
+  for (let i = 0; i < eventsList.length; i++) {
+    if (eventsList[i]["organizer"] === myWebID) {
+      console.log(eventsList[i]["organizer"]);
+      role = '<small class="text-danger">Organizer</small>';
+    } else {
+      role = '<small class="text-info">Attendee</small>';
+    }
+    if (eventsList[i]["endDate"] == null) {
+      eventsList[i]["endDate"] = "";
+    } else {
+      eventsList[i]["endDate"] = " to " + formatDate(eventsList[i]["endDate"]);
+    }
+
+    document.getElementById("eventlist").innerHTML += `<div
                 href="#"
-                class="list-group-item list-group-item-action active"
+                class="list-group-item list-group-item-action py-2"
                 aria-current="true"
               >
                 <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-danger">Organizer</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small>And some small print.</small>
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-muted">3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small class="text-muted">And some muted small print.</small>
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-muted">3 days ago</small>
-                </div>
-                <p class="mb-1">Some placeholder content in a paragraph.</p>
-                <small class="text-muted">And some muted small print.</small>
-              </a>
-            </div>
+                  <h5 class="mb-1">${eventsList[i]["name"]}</h5>
 
 
-
-  
-  
-  
-  `;
+                ${role}
+                </div>
+                <p class="mb-1">${eventsList[i]["description"]}</p>
+                <small><p>${eventsList[i]["startDate"]}${eventsList[i]["endDate"]}</p></small>
+              </div>`;
+  }
+  //<a href="${eventsList[i]["location"]}"><i class="fa-solid fa-location-dot"></i></a>
 }
 
 //*Event Creation
@@ -1024,6 +1007,18 @@ async function newEvent() {
   const labelWriteStatus = document.getElementById("labelPublicationStatus");
   labelWriteStatus.innerHTML = `<dt>Event published!</dt>`;
   labelWriteStatus.setAttribute("role", "alert");
+
+  loadEventList();
+}
+
+//*Date conversion
+function formatDate(input) {
+  var datePart = input.match(/\d+/g),
+    year = datePart[0], //.substring(2), // get only two digits
+    month = datePart[1],
+    day = datePart[2];
+
+  return day + "/" + month + "/" + year;
 }
 
 //*File upload in Container
@@ -1077,6 +1072,7 @@ buttonToProfile.onclick = function () {
 };
 
 buttonFriend.onclick = async function () {
+  useLoading("show");
   buttonFriend.innerHTML = "<small>Friend added</small>";
   buttonRemove.innerHTML = "Remove Friend";
 
@@ -1129,12 +1125,6 @@ inputBirth.addEventListener("change", (event) => {
     'Write your birthday: <i class="fa-solid fa-spinner"></i>';
   cbirth = true;
 });
-
-/*inputGender.addEventListener("change", (event) => {
-  document.querySelector("#writegender").innerHTML =
-    'Select your gender: <i class="fa-solid fa-spinner"></i>';
-  cgender = true;
-});*/ //!Da eliminare
 
 inputCountry.addEventListener("change", (event) => {
   document.querySelector("#writecountry").innerHTML =

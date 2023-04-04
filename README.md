@@ -1,13 +1,13 @@
 # vCardManagerSolid
 
 
-AUTHOR: Andrea Vitti
+Author: ANDREA VITTI
 
-ORGANIZATION: Bari University "Aldo Moro"
+Organization: "ALDO MORO" UNIVERSITY, BARI, ITALY
 
-ROLE: graduating student
+Role: GRADUATING STUDENT
 
-PURPOSE: three-year degree thesis in computer science
+Purpose: THREE-YEAR DEGREE THESIS IN COMPUTER SCIENCE AND DIGITAL COMUNICATION
 
 
 

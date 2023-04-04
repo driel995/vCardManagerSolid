@@ -1,15 +1,6 @@
 # vCardManagerSolid
 
 
-Author: ANDREA VITTI
-
-Organization: "ALDO MORO" UNIVERSITY, BARI, ITALY
-
-Role: GRADUATING STUDENT
-
-Purpose: THREE-YEAR DEGREE THESIS IN COMPUTER SCIENCE AND DIGITAL COMUNICATION
-
-
 
 This is a study application based on management of Linked Data in SOLID Architecture.
 

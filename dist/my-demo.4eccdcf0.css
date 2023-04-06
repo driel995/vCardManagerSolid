@@ -178,6 +178,11 @@ dd {
   min-width: 10vh;
 }
 
+.fpropic {
+  width: 7.5vh;
+  min-width: 5vh;
+}
+
 .friend-pic {
   object-fit: scale-down;
   height: 150px;

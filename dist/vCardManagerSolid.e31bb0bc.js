@@ -62515,7 +62515,6 @@ async function exit() {
   }
 }
 
-//!Screen qua funzione caricamento dataset
 //*Load Dataset
 async function loadDataset() {
   let webID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : session.info.webId;
@@ -62535,7 +62534,6 @@ async function loadDataset() {
   };
 }
 
-//!Screen qua funzione ricerca elementi
 //*Element Search
 //If a property has more than one element (like hasAddress, hasEmail, knows), check if the value already exist in record
 function elementSearch(dataset, urls, value) {
@@ -62944,6 +62942,82 @@ async function loadCardInfo(name, avatar, email, country, birth) {
 
  
   `;
+  document.getElementById("panel-header").innerHTML = `${name}'s Profile`;
+  document.getElementById("panel-content").innerHTML = `
+  <div class="row justify-content-center">
+  <div class="col-sm-auto">
+  <section>
+  <img src="${avatar}" class="propic rounded">
+  </section>
+  </div>
+
+  <div class="col-sm-auto border-bottom border-top mt-2">
+
+
+
+  
+  <section>
+  <p id="field-name">
+  <div class="row">
+  <div class="col-4">Fullname:</div>
+  <div class="col-8"><p class="value">${name}</p></div></p>
+  </div>
+  </section>
+
+  <section>
+ <p id="field-birth">
+  <div class="row">
+  <div class="col-4">Birthday:</div>
+  <div class="col-8"><p class="value"> ${formatDate(birth)}</p></div></p>
+  </div>
+ </p>
+ </section>
+
+
+
+
+ 
+<section>
+ <p id="field-email">
+ <div class="row">
+  <div class="col-4">Email:</div>
+  <div class="col-8"><p class="value"><a href="mailto:${email}">${email}</a></p></div>
+  </div>
+  </p>
+ </section>
+
+
+
+
+
+
+   <section>
+ <p id="field-country">
+ 
+ <div class="row">
+  <div class="col-4">Country:</div>
+  <div class="col-8"><p class="value">${country}</p></div>
+  </div>
+  </p>
+ </section>
+
+
+  
+</div>
+
+
+
+
+
+  </div>
+
+ 
+
+ 
+  `;
+  document.getElementById("panel-content").innerHTML += `
+      <h6 class="mt-4 fw-bold">Friends</h6>
+      <div class='mt-2 d-flex flex-column justify-content-between'></div>`;
 
   //Show vcard modal footer for functions' buttons
   if (!session.info.isLoggedIn) {
@@ -63043,6 +63117,14 @@ async function loadFriendList() {
 </div>
 </div> `;
     }
+
+    //Panel Update
+    document.getElementById("panel-content").lastChild.innerHTML = "";
+    for (let i = 0; i < friendsList.length; i++) {
+      document.getElementById("panel-content").lastChild.innerHTML += `<div><a href="${friendsList[i]["url"]}"><img src="${friendsList[i]["avatar"]}" class="fpropic img-thumbnail rounded" alt="..."> 
+      <p>${friendsList[i]["name"]}</p>
+      </a></div>`;
+    }
     list.addEventListener("click", e => {
       if (e.target.classList.contains("auxbtnremove")) {
         if (confirm("Are you sure you want to remove " + e.target.getAttribute("data-fn") + " from your friends list?") == true) {
@@ -63073,6 +63155,7 @@ async function loadFriendList() {
       element.classList.add("d-none");
     }
   }
+
   /*
   <button type="button" class="btn btn-primary auxbtnread w-50" data-user="${friendsList[i]["url"]}"> 
   <i class="fa-solid fa-eye" > </i> </button>*/
@@ -63142,7 +63225,6 @@ async function removeFriend() {
   loadFriendList();
 }
 
-//TODO: Implementazione della funzione
 //*Load Events list
 async function loadEventList() {
   let id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : session.info.webId;
@@ -63402,7 +63484,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49838" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59723" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

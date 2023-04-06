@@ -62421,30 +62421,11 @@ exports.XSD = XSD;
 var _solidClient = require("@inrupt/solid-client");
 var _solidClientAuthnBrowser = require("@inrupt/solid-client-authn-browser");
 var _vocabCommonRdf = require("@inrupt/vocab-common-rdf");
-/*? Other methods that could turn useful in my project
-import {
-  getFile,
-  saveFileInContainer,
-  isRawData,
-  getContentType,
-  addStringNoLocale,
-  createSolidDataset,
-  getDateAll,
-  getStringByLocaleAll,
-  removeAll,
-  setDate,
-  setDatetime,
-  addThing,
-  getPropertyAll,
-} from "@inrupt/solid-client";
-or vocabularies*/
+//*Imported functions and objects
 
-//import { RDF, RDFS } from "@inrupt/vocab-common-rdf";
-
-//*Used methods and vocabularies
+//*And vocabularies
 
 //*MAIN
-
 const NOT_ENTERED_WEBID = "...not logged in yet - but enter any WebID to read from its profile...";
 let session = new _solidClientAuthnBrowser.Session();
 
@@ -62492,7 +62473,6 @@ useLoading("hide");
 //*End MAIN
 
 //*FUNCTIONS
-
 //*Login
 async function login() {
   if (!session.info.isLoggedIn) {
@@ -62509,8 +62489,8 @@ async function login() {
 When redirected after login, finish the process by retrieving session information.*/
 async function handleRedirectAfterLogin() {
   await session.handleIncomingRedirect({
-    restorePreviousSession: true /*this option allows to store already authenticated user. 
-                                   Default would be window.location.href*/,
+    restorePreviousSession: true,
+    //this option allows to restore session from already authenticated user.
     url: window.location.href
   });
   if (session.info.isLoggedIn) {
@@ -63099,12 +63079,12 @@ async function loadFriendList() {
 }
 
 //MODAL FUNCTION
-function useLoading(type) {
+function useLoading(option) {
   const loadinEl = document.getElementsByClassName("loading-wall")[0];
-  if (type === "show") {
+  if (option === "show") {
     loadinEl.style.display = "block";
   }
-  if (type === "hide") {
+  if (option === "hide") {
     loadinEl.classList.add("loading-away");
     setTimeout(() => {
       loadinEl.style.display = "none";
@@ -63422,7 +63402,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60438" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49838" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

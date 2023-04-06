@@ -1,55 +1,31 @@
-/*? Other methods that could turn useful in my project
+//*Imported functions and objects
 import {
-  getFile,
-  saveFileInContainer,
-  isRawData,
-  getContentType,
-  addStringNoLocale,
-  createSolidDataset,
-  getDateAll,
-  getStringByLocaleAll,
-  removeAll,
-  setDate,
-  setDatetime,
-  addThing,
-  getPropertyAll,
-} from "@inrupt/solid-client";
-or vocabularies*/
-
-//import { RDF, RDFS } from "@inrupt/vocab-common-rdf";
-
-//*Used methods and vocabularies
-import {
-  getSolidDataset,
-  getStringNoLocaleAll,
-  getStringNoLocale,
-  setStringNoLocale,
-  saveSolidDatasetAt,
   getPodUrlAll,
   getSourceUrl,
-  overwriteFile,
+  getSolidDataset,
+  saveSolidDatasetAt,
+  getStringNoLocale,
+  getStringNoLocaleAll,
+  setStringNoLocale,
   getThing,
   createThing,
   setThing,
   getDate,
   getUrl,
+  getUrlAll,
   setUrl,
   addUrl,
-  getUrlAll,
   removeUrl,
+  overwriteFile,
 } from "@inrupt/solid-client";
 
-import {
-  Session,
-  //onSessionRestore,
-  //onLogin,
-  //getDefaultSession,
-} from "@inrupt/solid-client-authn-browser";
+import { Session } from "@inrupt/solid-client-authn-browser";
+
+//*And vocabularies
 
 import { VCARD, SCHEMA_INRUPT, FOAF } from "@inrupt/vocab-common-rdf";
 
 //*MAIN
-
 const NOT_ENTERED_WEBID =
   "...not logged in yet - but enter any WebID to read from its profile...";
 
@@ -99,7 +75,6 @@ useLoading("hide");
 //*End MAIN
 
 //*FUNCTIONS
-
 //*Login
 async function login() {
   if (!session.info.isLoggedIn) {
@@ -116,8 +91,7 @@ async function login() {
 When redirected after login, finish the process by retrieving session information.*/
 async function handleRedirectAfterLogin() {
   await session.handleIncomingRedirect({
-    restorePreviousSession: true /*this option allows to store already authenticated user. 
-                                   Default would be window.location.href*/,
+    restorePreviousSession: true, //this option allows to restore session from already authenticated user.
     url: window.location.href,
   });
 
@@ -143,7 +117,6 @@ async function exit() {
   }
 }
 
-//!Screen qua funzione caricamento dataset
 //*Load Dataset
 async function loadDataset(webID = session.info.webId) {
   // The WebID can contain a hash fragment (e.g. `#me`) to refer to profile data
@@ -160,7 +133,6 @@ async function loadDataset(webID = session.info.webId) {
   return { profileDataset, profileDocumentUrl };
 }
 
-//!Screen qua funzione ricerca elementi
 //*Element Search
 //If a property has more than one element (like hasAddress, hasEmail, knows), check if the value already exist in record
 function elementSearch(dataset, urls, value) {
@@ -783,12 +755,12 @@ async function loadFriendList(id = null) {
 }
 
 //MODAL FUNCTION
-function useLoading(type) {
+function useLoading(option) {
   const loadinEl = document.getElementsByClassName("loading-wall")[0];
-  if (type === "show") {
+  if (option === "show") {
     loadinEl.style.display = "block";
   }
-  if (type === "hide") {
+  if (option === "hide") {
     loadinEl.classList.add("loading-away");
     setTimeout(() => {
       loadinEl.style.display = "none";
@@ -840,7 +812,6 @@ async function removeFriend(id = null) {
   loadFriendList();
 }
 
-//TODO: Implementazione della funzione
 //*Load Events list
 async function loadEventList(id = session.info.webId) {
   let myWebID;
